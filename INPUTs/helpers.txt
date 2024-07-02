@@ -1,0 +1,19 @@
+.
+├── AlGaN_HEMT ==> AlGaN HEMT structure
+│   ├── AlGaN_AlGaN_AlN_HEMT ==> AlGaN(Barrier)_AlGaN(Channel)_AlN(substrate) HEMT structure
+│   │   └── nnp ==> nextnano++ simulations
+│   │       └── OneDim ==> 1D simulations
+│   │           ├── single_E_single_H ==> Single-band Gamma electron and single-band HH, LH, and SO hole simulations
+│   │           │   └── sim.in ==> Input file
+│   │           └── single_E_sixKP_H ==> Single-band Gamma electron and 6-band kp for HH, LH, and SO hole simulations
+│   │               ├── helpers.txt ==> File descriptions
+│   │               ├── sim.in ==> Input file
+│   │               └── specific_Al75Ga25N_Al55Ga45N_AlN_sim.in ==> Input file for specific device grown experimentally
+│   └── TestInputs
+│       ├── HEMT_1D_nnp.in
+│       ├── Jogai_AlGaNGaN_FET_JAP2003_GaNcap_Fig4_1D_nnp.in
+│       ├── RHEL_crashed_Test.log
+│       └── Test.in
+└── helpers.txt ==> Folder structure description
+
+8 directories, 13 files
