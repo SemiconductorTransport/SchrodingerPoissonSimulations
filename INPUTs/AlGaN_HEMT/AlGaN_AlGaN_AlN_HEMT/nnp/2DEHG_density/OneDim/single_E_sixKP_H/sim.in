@@ -9,31 +9,40 @@
 #===================================================================================================
 # Setup the input parameters
 #===================================================================================================
-# 3 Options
-# AA) ==> "1" <== single-band for electrons & single-band for holes
-# BB) ==> "2" <== single-band for electrons & 6-band k.p  for holes
-# CC) ==> "3" <== 8-band k.p  for electrons & 8-band k.p  for holes
 #++++++++++++++++++++++
 <variables>
- $calculation    = 1               # 1 = single-band, 2 = 6-band, 3 = 8-band            (ListOfValues:1,2,3) (HighlightInUserInterface)
+ $calculation_2deg    = 1               # 1 = single-band, 2 = 6-band, 3 = 8-band, 4 = 6-band+1-band    (ListOfValues:1,2,3,4) (HighlightInUserInterface)
+ $calculation_2dhg    = 1               # 1 = single-band, 2 = 6-band, 3 = 8-band, 4 = 6-band+1-band    (ListOfValues:1,2,3,4) (HighlightInUserInterface)
 </variables>
-#++++++++++++++++++++++
 
-$Rescale_S       = 1               # rescale 8-band k.p parameters (ListOfValues:0,1)
-
-# Define auxiliary variables representing the choice of the barrier shape to be used below
-$SingleBandOnly  = ( 2 - $calculation ) * ( 3 - $calculation )   # /=0 for single-band  (DoNotShowInUserInterface)
-$kp_6band        = ( 1 - $calculation ) * ( 3 - $calculation )   # /=0 for 6-band       (DoNotShowInUserInterface)
-$kp_8band        = ( 1 - $calculation ) * ( 2 - $calculation )   # /=0 for 8-band       (DoNotShowInUserInterface)
+#---------------------------------------------------------------------------------------------------
+# Define auxiliary variables representing the choice of quantum calculations in 2DEG and 2DHG quantum regions
+#---------------------------------------------------------------------------------------------------
+$single_band_only_2deg        = ( 2 - $calculation_2deg ) * ( 3 - $calculation_2deg ) * ( 4 - $calculation_2deg ) # /=0 for single-band              (DoNotShowInUserInterface)
+$kp_6band_2deg                = ( 1 - $calculation_2deg ) * ( 3 - $calculation_2deg ) * ( 4 - $calculation_2deg ) # /=0 for 6-band                   (DoNotShowInUserInterface)
+$kp_8band_2deg                = ( 1 - $calculation_2deg ) * ( 2 - $calculation_2deg ) * ( 4 - $calculation_2deg ) # /=0 for 8-band                   (DoNotShowInUserInterface)
+$single_band_kp_6band_2deg    = ( 1 - $calculation_2deg ) * ( 2 - $calculation_2deg ) * ( 3 - $calculation_2deg ) # /=0 for 6-band+single-band       (DoNotShowInUserInterface)
+#++++++++++++++++++++++++
+$single_band_only_2dhg        = ( 2 - $calculation_2dhg ) * ( 3 - $calculation_2dhg ) * ( 4 - $calculation_2deg ) # /=0 for single-band              (DoNotShowInUserInterface)
+$kp_6band_2dhg                = ( 1 - $calculation_2dhg ) * ( 3 - $calculation_2dhg ) * ( 4 - $calculation_2deg ) # /=0 for 6-band                   (DoNotShowInUserInterface)
+$kp_8band_2dhg                = ( 1 - $calculation_2dhg ) * ( 2 - $calculation_2dhg ) * ( 4 - $calculation_2deg ) # /=0 for 8-band                   (DoNotShowInUserInterface)
+$single_band_kp_6band_2deg    = ( 1 - $calculation_2deg ) * ( 2 - $calculation_2deg ) * ( 3 - $calculation_2deg ) # /=0 for 6-band+single-band       (DoNotShowInUserInterface)
 
 #++++++++++++++++++++++++
-$NumberOfEigenvaluesGamma   =  20   # number of eigenvalues to be calculated for Gamma valley (DoNotShowInUserInterface)
+$NumberOfEigenvaluesGamma   =  50   # number of eigenvalues to be calculated for Gamma valley (DoNotShowInUserInterface)
 $NumberOfEigenvaluesL       =   0   # number of eigenvalues to be calculated for L valley     (DoNotShowInUserInterface)
 $NumberOfEigenvaluesDelta   =   0   # number of eigenvalues to be calculated for Delta valley (DoNotShowInUserInterface)
-$NumberOfEigenvaluesHoles   =  20   # number of eigenvalues to be calculated for holes        (DoNotShowInUserInterface)
+$NumberOfEigenvaluesHoles   =  50   # number of eigenvalues to be calculated for holes        (DoNotShowInUserInterface)
 
-$use_k_subspace         = no        # use k.p subspace approximation                           (ListOfValues:yes,no)
 $Include_L_and_Delta    = 0         # include L and Delta valleys. AlGaN is direct throughout. (ListOfValues:0,1)
+
+#---------------------------------------------------------------------------------------------------
+# Special seetings for k.p methods
+#---------------------------------------------------------------------------------------------------
+$Rescale_S                          = 1    # rescale 8-band k.p parameters (ListOfValues:0,1)
+$use_6band_parameters_for_8band_kp  = no   # evaluates the 8-band parameters from 6-band parameters, Kane parameter (ListOfValues:yes,no)
+$eval_s_8kp                         = no   # evaluates S k.p parameter(s) from effective mass, Kane parameter(s), spin-orbit coupling(s) and temperature dependent band gap (ListOfValues:yes,no)
+$use_k_subspace                     = no   # use k.p subspace approximation (ListOfValues:yes,no)
 
 #---------------------------------------------------------------------------------------------------
 # AlContent == Al mole fraction in AlxGa1-xN
@@ -59,12 +68,6 @@ $EffectiveBarrier      = 1         # is composition gradient inside barrier?  (L
 $CompositionGradLength2DHG  =  0.0      # thickness of Polarization Doping channel (DisplayUnit:nm)(HighlightInUserInterface)
 
 #---------------------------------------------------------------------------------------------------
-# Doping parameters (Substrate-Channel interface)
-#---------------------------------------------------------------------------------------------------
-$DopingChannelLength  = 0.0         # thickness of Dopig channel => delta doping                    (DisplayUnit:nm)(HighlightInUserInterface)
-$DopingConcentration  = 150E18      # doping concentration: 150 * 10^18 cm^-3 = 1.5 * 10^20 cm^-3   (DisplayUnit:cm^-3)(HighlightInUserInterface)
-
-#---------------------------------------------------------------------------------------------------
 # Layer thicknesses
 #---------------------------------------------------------------------------------------------------
 $ThicknessContact         =  10.0    # thickness of Contact region                     (DisplayUnit:nm)(HighlightInUserInterface)
@@ -76,6 +79,28 @@ $EffectiveThicknessAlGaNBarrier    =  $ThicknessAlGaNBarrier - ($CompositionGrad
 
 $QR_width_2DEG            =  $CompositionGradLength2DEG + 80.0          # width of quantum region of 2DEG (DisplayUnit:nm)(HighlightInUserInterface)
 $QR_width_2DHG            =  $CompositionGradLength2DHG + 80.0          # width of quantum region of 2DHG (DisplayUnit:nm)(HighlightInUserInterface)
+
+#---------------------------------------------------------------------------------------------------
+# Unintentional Doping parameters (at Substrate-Channel-Barrier)
+#---------------------------------------------------------------------------------------------------
+$UnintentionalDopingBarrierLength         = 0.0      #$ThicknessAlGaNBarrier          # thickness of Doping in barrier => constant doping             (DisplayUnit:nm)(HighlightInUserInterface)
+$UnintentionalDopingBarrierConcentration  = 150E18                                    # doping concentration: 150 * 10^18 cm^-3 = 1.5 * 10^20 cm^-3   (DisplayUnit:cm^-3)(HighlightInUserInterface)
+$UnintentionalDopingChannelLength         = 0.0      #$ThicknessAlGaNChannel          # thickness of Doping channel => constant doping                (DisplayUnit:nm)(HighlightInUserInterface)
+$UnintentionalDopingChannelConcentration  = 150E18                                    # doping concentration: 150 * 10^18 cm^-3 = 1.5 * 10^20 cm^-3   (DisplayUnit:cm^-3)(HighlightInUserInterface)
+$UnintentionalDopingSubLength             = 0.0      #$ThicknessAlNSub                # thickness of Doping Substrate => constant doping              (DisplayUnit:nm)(HighlightInUserInterface)
+$UnintentionalDopingSubConcentration      = 150E18                                    # doping concentration: 150 * 10^18 cm^-3 = 1.5 * 10^20 cm^-3   (DisplayUnit:cm^-3)(HighlightInUserInterface)
+
+#---------------------------------------------------------------------------------------------------
+# Intentional Doping parameters (Barrier-Channel interface)
+#---------------------------------------------------------------------------------------------------
+$IntentionalDopingBCLength  = 0.0                # thickness of Doping barrier-channel interface=> delta doping (DisplayUnit:nm)(HighlightInUserInterface)
+$IntentionalDopingBCConcentration  = 150E18      # dopinng concentration: 150 * 10^18 cm^-3 = 1.5 * 10^20 cm^-3 (DisplayUnit:cm^-3)(HighlightInUserInterface)
+
+#---------------------------------------------------------------------------------------------------
+# Intentional Doping parameters (Substrate-Channel interface)
+#---------------------------------------------------------------------------------------------------
+$IntentionalDopingSCLength  = 0.0                # thickness of Doping substrate-channel interface=> delta doping (DisplayUnit:nm)(HighlightInUserInterface)
+$IntentionalDopingSCConcentration  = 150E18      # dopinng concentration: 150 * 10^18 cm^-3 = 1.5 * 10^20 cm^-3   (DisplayUnit:cm^-3)(HighlightInUserInterface)
 
 #---------------------------------------------------------------------------------------------------
 # Schottky barrier height
@@ -214,11 +239,28 @@ $MiddleSubBeyondSub            = $MiddleSubnThicknessSub <= 0
    $DoNotIgnoreMidSubGridLine  = $_DoNotIgnoreMidSubGridLine
    $MiddleAlNSub               = $_MiddleAlNSub
 !ENDIF
+
 #---------------------------------------------------------------------------------------------------
-# Define coordinate of doping region.
+# Define coordinate of unintentional doping region (at Substrate-Channel-Barrier)
 #---------------------------------------------------------------------------------------------------
-$StartDopingRegion   = $EndAlGaNChannel + 10.0                            # (DisplayUnit:nm)(DoNotShowInUserInterface)
-$EndDopingRegion     = $StartDopingRegion + $DopingChannelLength          # (DisplayUnit:nm)(DoNotShowInUserInterface)
+$StartUDopingBarrierRegion   = $StartAlGaNBarrier                                                   # (DisplayUnit:nm)(DoNotShowInUserInterface)
+$EndUDopingBarrierRegion     = $StartUDopingBarrierRegion + $UnintentionalDopingBarrierLength       # (DisplayUnit:nm)(DoNotShowInUserInterface)
+$StartUDopingChannelRegion   = $StartAlGaNChannel                                                   # (DisplayUnit:nm)(DoNotShowInUserInterface)
+$EndUDopingChannelRegion     = $StartUDopingChannelRegion + $UnintentionalDopingChannelLength       # (DisplayUnit:nm)(DoNotShowInUserInterface)
+$StartUDopingSubRegion       = $StartAlNSub                                                         # (DisplayUnit:nm)(DoNotShowInUserInterface)
+$EndUDopingSubRegion         = $StartUDopingSubRegion + $UnintentionalDopingSubLength               # (DisplayUnit:nm)(DoNotShowInUserInterface)
+
+#---------------------------------------------------------------------------------------------------
+# Define coordinate of intentional doping region (Barrier-Channel interface)
+#---------------------------------------------------------------------------------------------------
+$StartIDopingBCRegion   = $EndAlGaNChannel                                      # (DisplayUnit:nm)(DoNotShowInUserInterface)
+$EndIDopingBCRegion     = $StartIDopingBCRegion + $IntentionalDopingBCLength    # (DisplayUnit:nm)(DoNotShowInUserInterface)
+
+#---------------------------------------------------------------------------------------------------
+# Define coordinate of intentional doping region (Substrate-Channel interface)
+#---------------------------------------------------------------------------------------------------
+$StartIDopingSCRegion   = $EndAlGaNBarrier #+10                                 # (DisplayUnit:nm)(DoNotShowInUserInterface)
+$EndIDopingSCRegion     = $StartIDopingSCRegion + $IntentionalDopingSCLength    # (DisplayUnit:nm)(DoNotShowInUserInterface)
 
 #---------------------------------------------------------------------------------------------------
 # Define Middle of channel if ($QRegion_Left_2DHG - $QRegion_Right_2DEG) > $Spacing_general*10 nm
@@ -699,18 +741,74 @@ structure{
    }
    #................................................................................................................
 
-   #.........................Dopig:  (ignored when $DopingChannelLength = 0)........................................
-   !WHEN $DopingChannelLength region{
-   !WHEN $DopingChannelLength   line{
-   !WHEN $DopingChannelLength      x = [$StartDopingRegion, $EndDopingRegion]
-   !WHEN $DopingChannelLength   }
-   !WHEN $DopingChannelLength   doping{
-   !WHEN $DopingChannelLength      constant{
-   !WHEN $DopingChannelLength         name = "impurity1"            # properties of this impurity type have to be specified below
-   !WHEN $DopingChannelLength         conc = $DopingConcentration
-   !WHEN $DopingChannelLength      }
-   !WHEN $DopingChannelLength   }
-   !WHEN $DopingChannelLength }
+   #.................Unintentional doping:(ignored when $UnintentionalDopingBarrierLength = 0)......................
+   !WHEN $UnintentionalDopingBarrierLength region{
+   !WHEN $UnintentionalDopingBarrierLength   line{
+   !WHEN $UnintentionalDopingBarrierLength      x = [$StartUDopingBarrierRegion, $EndUDopingBarrierRegion]
+   !WHEN $UnintentionalDopingBarrierLength   }
+   !WHEN $UnintentionalDopingBarrierLength   doping{
+   !WHEN $UnintentionalDopingBarrierLength      constant{
+   !WHEN $UnintentionalDopingBarrierLength         name = "impurity_barrier"            # properties of this impurity type have to be specified below
+   !WHEN $UnintentionalDopingBarrierLength         conc = $UnintentionalDopingBarrierConcentration
+   !WHEN $UnintentionalDopingBarrierLength      }
+   !WHEN $UnintentionalDopingBarrierLength   }
+   !WHEN $UnintentionalDopingBarrierLength }
+   #................................................................................................................
+
+   #.................Unintentional doping:(ignored when $UnintentionalDopingChannelLength = 0)......................
+   !WHEN $UnintentionalDopingChannelLength region{
+   !WHEN $UnintentionalDopingChannelLength   line{
+   !WHEN $UnintentionalDopingChannelLength      x = [$StartUDopingChannelRegion, $EndUDopingChannelRegion]
+   !WHEN $UnintentionalDopingChannelLength   }
+   !WHEN $UnintentionalDopingChannelLength   doping{
+   !WHEN $UnintentionalDopingChannelLength      constant{
+   !WHEN $UnintentionalDopingChannelLength         name = "impurity_channel"            # properties of this impurity type have to be specified below
+   !WHEN $UnintentionalDopingChannelLength         conc = $UnintentionalDopingChannelConcentration
+   !WHEN $UnintentionalDopingChannelLength      }
+   !WHEN $UnintentionalDopingChannelLength   }
+   !WHEN $UnintentionalDopingChannelLength }
+   #................................................................................................................
+
+   #.................Unintentional doping:(ignored when $UnintentionalDopingSubLength = 0)..........................
+   !WHEN $UnintentionalDopingSubLength region{
+   !WHEN $UnintentionalDopingSubLength   line{
+   !WHEN $UnintentionalDopingSubLength      x = [$StartUDopingSubRegion, $EndUDopingSubRegion]
+   !WHEN $UnintentionalDopingSubLength   }
+   !WHEN $UnintentionalDopingSubLength   doping{
+   !WHEN $UnintentionalDopingSubLength      constant{
+   !WHEN $UnintentionalDopingSubLength         name = "impurity_sub"            # properties of this impurity type have to be specified below
+   !WHEN $UnintentionalDopingSubLength         conc = $UnintentionalDopingSubConcentration
+   !WHEN $UnintentionalDopingSubLength      }
+   !WHEN $UnintentionalDopingSubLength   }
+   !WHEN $UnintentionalDopingSubLength }
+   #................................................................................................................
+
+   #..............Intentional doping at Barrier-Channel:(ignored when $IntentionalDopingBCLength = 0)...............
+   !WHEN $IntentionalDopingBCLength region{
+   !WHEN $IntentionalDopingBCLength   line{
+   !WHEN $IntentionalDopingBCLength      x = [$StartIDopingBCRegion, $EndIDopingBCRegion]
+   !WHEN $IntentionalDopingBCLength   }
+   !WHEN $IntentionalDopingBCLength   doping{
+   !WHEN $IntentionalDopingBCLength      constant{
+   !WHEN $IntentionalDopingBCLength         name = "impurity_bc"            # properties of this impurity type have to be specified below
+   !WHEN $IntentionalDopingBCLength         conc = $IntentionalDopingBCConcentration
+   !WHEN $IntentionalDopingBCLength      }
+   !WHEN $IntentionalDopingBCLength   }
+   !WHEN $IntentionalDopingBCLength }
+   #................................................................................................................
+
+   #...........Intentional doping at Channel-Substrate:(ignored when $IntentionalDopingSCLength = 0)................
+   !WHEN $IntentionalDopingSCLength region{
+   !WHEN $IntentionalDopingSCLength   line{
+   !WHEN $IntentionalDopingSCLength      x = [$StartIDopingSCRegion, $EndIDopingSCRegion]
+   !WHEN $IntentionalDopingSCLength   }
+   !WHEN $IntentionalDopingSCLength   doping{
+   !WHEN $IntentionalDopingSCLength      constant{
+   !WHEN $IntentionalDopingSCLength         name = "impurity_sc"            # properties of this impurity type have to be specified below
+   !WHEN $IntentionalDopingSCLength         conc = $IntentionalDopingSCConcentration
+   !WHEN $IntentionalDopingSCLength      }
+   !WHEN $IntentionalDopingSCLength   }
+   !WHEN $IntentionalDopingSCLength }
    #................................................................................................................
 
    region{
@@ -730,8 +828,28 @@ structure{
 }
 
 impurities{
-   donor{ # n-type, p-type
-      name = "impurity1"
+   donor{
+      name = "impurity_barrier"
+      energy = 0.007              # energy relative to 'nearest' band edge (n-type -> conduction band, p-type -> valence band)
+      degeneracy = 2              # degeneracy of energy levels, 2 for n-type, 4 for p-type
+   }
+   donor{
+      name = "impurity_channel"
+      energy = 0.007              # energy relative to 'nearest' band edge (n-type -> conduction band, p-type -> valence band)
+      degeneracy = 2              # degeneracy of energy levels, 2 for n-type, 4 for p-type
+   }
+   donor{
+      name = "impurity_sub"
+      energy = 0.007              # energy relative to 'nearest' band edge (n-type -> conduction band, p-type -> valence band)
+      degeneracy = 2              # degeneracy of energy levels, 2 for n-type, 4 for p-type
+   }
+   donor{
+      name = "impurity_bc"
+      energy = 0.007              # energy relative to 'nearest' band edge (n-type -> conduction band, p-type -> valence band)
+      degeneracy = 2              # degeneracy of energy levels, 2 for n-type, 4 for p-type
+   }
+   donor{
+      name = "impurity_sc"
       energy = 0.007              # energy relative to 'nearest' band edge (n-type -> conduction band, p-type -> valence band)
       degeneracy = 2              # degeneracy of energy levels, 2 for n-type, 4 for p-type
    }
@@ -776,7 +894,39 @@ quantum{
       boundary{ x = dirichlet }
       # boundary{ x = neumann }
 
-      !IF($kp_8band)
+      !IF($single_band_only_2deg)
+         Gamma{
+               num_ev = $NumberOfEigenvaluesGamma
+            }
+      !ELIF($kp_6band_2deg)
+         no_density = no # quantum mechanical charge density is calculated. If yes: only wave functions are calculated, not charge densities
+         kp_6band{
+            num_ev = $NumberOfEigenvaluesHoles
+            k_integration{
+               relative_size = 1.0
+               num_points    = 10
+               num_subpoints = 5
+               max_symmetry  = full
+               force_k0_subspace = $use_k_subspace
+            }
+         }
+      !ELIF($single_band_kp_6band_2deg)
+         Gamma{
+               num_ev = $NumberOfEigenvaluesGamma
+            }
+         no_density = no # quantum mechanical charge density is calculated. If yes: only wave functions are calculated, not charge densities
+         kp_6band{
+            num_ev = $NumberOfEigenvaluesHoles
+            k_integration{
+               relative_size = 1.0
+               num_points    = 10
+               num_subpoints = 5
+               max_symmetry  = full
+               force_k0_subspace = $use_k_subspace
+            }
+         }
+      !ELIF($kp_8band_2deg)
+         no_density = no # quantum mechanical charge density is calculated. If yes: only wave functions are calculated, not charge densities
          kp_8band{
             num_electrons = 2*$NumberOfEigenvaluesGamma   # kp8 distinguishes spin up and down states
             num_holes     = 2*$NumberOfEigenvaluesHoles
@@ -786,15 +936,15 @@ quantum{
             kp_parameters{
                #use_Luttinger_parameters = yes  # Only available for ZB str
                #approximate_kappa        = yes  # Only available for ZB str
-               from_6band_parameters     = yes
-               evaluate_S                = yes
-         !WHEN $Rescale_S rescale_S_to   = 1.0  # seems to be very important
+               from_6band_parameters     = $use_6band_parameters_for_8band_kp   #evaluates the 8-band parameters from 6-band parameters, Kane parameter
+               evaluate_S                = $eval_s_8kp                          #evaluates S k.p parameter(s) from effective mass, Kane parameter(s), spin-orbit coupling(s) and temperature dependent band gap.
+         !WHEN $Rescale_S rescale_S_to   = [1.0, 1.0]  # seems to be very important
             }
 
             k_integration{
-              relative_size = 0.2
-               num_points    = 1
-               num_subpoints = 1
+               relative_size = 1.0
+               num_points    = 10
+               num_subpoints = 5
                max_symmetry  = full
                force_k0_subspace = $use_k_subspace
             }
@@ -816,7 +966,7 @@ quantum{
             }
       !ENDIF
 
-      output_wavefunctions{  amplitudes = no  probabilities = yes  max_num = 9999 all_k_points = yes }
+      output_wavefunctions{ energy_shift=shifted amplitudes = no  probabilities = yes  max_num = 9999 all_k_points = yes structured=yes}
    }
 
    #----------------------------2D-hole gas region-------------------------------------------------
@@ -827,11 +977,11 @@ quantum{
       boundary{ x = dirichlet }
       # boundary{ x = neumann }
 
-      !IF($SingleBandOnly)
+      !IF($single_band_only_2dhg)
          HH{ num_ev = $NumberOfEigenvaluesHoles}
          LH{ num_ev = $NumberOfEigenvaluesHoles}
          SO{ num_ev = $NumberOfEigenvaluesHoles}
-      !ELIF($kp_6band)
+      !ELIF($kp_6band_2dhg)
          no_density = no # quantum mechanical charge density is calculated. If yes: only wave functions are calculated, not charge densities
          kp_6band{
             num_ev = $NumberOfEigenvaluesHoles
@@ -843,9 +993,52 @@ quantum{
                force_k0_subspace = $use_k_subspace
             }
          }
+      !ELIF($single_band_kp_6band_2dhg)
+         Gamma{
+               num_ev = $NumberOfEigenvaluesGamma
+            }
+         no_density = no # quantum mechanical charge density is calculated. If yes: only wave functions are calculated, not charge densities
+         kp_6band{
+            num_ev = $NumberOfEigenvaluesHoles
+            k_integration{
+               relative_size = 1.0
+               num_points    = 10
+               num_subpoints = 5
+               max_symmetry  = full
+               force_k0_subspace = $use_k_subspace
+            }
+         }
+      !ELIF($kp_8band_2dhg)
+         no_density = no # quantum mechanical charge density is calculated. If yes: only wave functions are calculated, not charge densities
+         kp_8band{
+            num_electrons = 2*$NumberOfEigenvaluesGamma   # kp8 distinguishes spin up and down states
+            num_holes     = 2*$NumberOfEigenvaluesHoles
+
+            lapack{}
+
+            kp_parameters{
+               #use_Luttinger_parameters = yes  # Only available for ZB str
+               #approximate_kappa        = yes  # Only available for ZB str
+               from_6band_parameters     = $use_6band_parameters_for_8band_kp  #evaluates the 8-band parameters from 6-band parameters, Kane parameter
+               evaluate_S                = $eval_s_8kp                         #evaluates S k.p parameter(s) from effective mass, Kane parameter(s), spin-orbit coupling(s) and temperature dependent band gap.
+         !WHEN $Rescale_S rescale_S_to   = [1.0, 1.0]  # seems to be very important
+            }
+
+            k_integration{
+               relative_size = 1.0
+               num_points    = 10
+               num_subpoints = 5
+               max_symmetry  = full
+               force_k0_subspace = $use_k_subspace
+            }
+         }
+      !ELSE
+         HH{ num_ev = $NumberOfEigenvaluesHoles}
+         LH{ num_ev = $NumberOfEigenvaluesHoles}
+         SO{ num_ev = $NumberOfEigenvaluesHoles}
       !ENDIF
 
-      output_wavefunctions{  amplitudes = no  probabilities = yes  max_num = 9999 all_k_points = yes }
+      output_wavefunctions{ energy_shift=shifted amplitudes = no  probabilities = yes  max_num = 9999 all_k_points = yes structured=yes}
    }
 
    #-------------exchange_correlation() only supports single band, ignored for kp------------------
