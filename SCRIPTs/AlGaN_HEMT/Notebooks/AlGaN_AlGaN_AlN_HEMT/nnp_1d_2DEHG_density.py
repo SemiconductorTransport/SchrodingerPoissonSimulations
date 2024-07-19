@@ -5,7 +5,7 @@
 
 # ## 1. General settings
 
-# In[1]:
+# In[44]:
 
 
 submit_cluster = 0 # Submit the job to the cluster or not.
@@ -13,7 +13,7 @@ submit_cluster = 0 # Submit the job to the cluster or not.
 
 # ### 1.1 Import modules
 
-# In[ ]:
+# In[45]:
 
 
 if not submit_cluster:
@@ -23,7 +23,7 @@ if not submit_cluster:
 
 # ### 1.1.1 Adding local module path to python module search path
 
-# In[2]:
+# In[46]:
 
 
 from pathlib import Path
@@ -35,7 +35,7 @@ sys.path.append(module_path)
 
 # #### 1.1.2 Import global modules
 
-# In[3]:
+# In[47]:
 
 
 import shutil
@@ -54,17 +54,18 @@ from matplotlib.widgets import Slider
 
 # #### 1.1.2 Import local defined modules
 
-# In[4]:
+# In[48]:
 
 
-from src.PlotFunctions import Plot1DFuns, PlotQuasi3DFuns
+from src.PlotFunctions import general_plot_functions, Plot1DFuns, PlotQuasi3DFuns
+lpltgen = general_plot_functions()
 lplt1d = Plot1DFuns()
 lpltq3d = PlotQuasi3DFuns()
 
 
 # ### 1.2 Matplotlib settings
 
-# In[5]:
+# In[49]:
 
 
 params = {'figure.figsize': (8, 6), 'legend.fontsize': 18, 'axes.labelsize': 24, 'axes.titlesize': 24,
@@ -77,7 +78,7 @@ plt.rc('font', size=24)
 
 # ### 1.3 nextnanopy settings
 
-# In[6]:
+# In[50]:
 
 
 #%% ===========================================================================
@@ -108,15 +109,15 @@ print(f'-nextnano config: {nn.config}')
 
 # ### 1.4 Set tasks to perform
 
-# In[7]:
+# In[51]:
 
 
-run_sim = 0 # run single simulations
+run_sim = 1 # run single simulations
 run_sweep = 0 # run sweep simulations
 run_sim_specific_sample = False # run single simulation for specific sample device
 run_sweep_specific_sample = False # run sweep simulation for specific sample device
 create_data_sweep = 0 # create required data sheet from seep simulation results
-append_new_sweep_data_2_data_base = 1 # append the new sweep data to existing data files. if False, rewrite the complete excel data file.
+append_new_sweep_data_2_data_base = 0 # append the new sweep data to existing data files. if False, rewrite the complete excel data file.
 do_plot = 1  # plot results of single simulation
 do_plot_sweep = 1 # plot results of sweep simulation
 savefigure = True # save the figures generated
@@ -124,7 +125,7 @@ savefigure = True # save the figures generated
 
 # ### 1.5 Input and output directories/files
 
-# In[8]:
+# In[52]:
 
 
 #++++++++++++++++++++++++++++++++++++++++++++++
@@ -203,7 +204,7 @@ FigDpi = 75
 
 # ### 1.5 Sweep parameters
 
-# In[9]:
+# In[53]:
 
 
 # Specify sweep variables:
@@ -212,9 +213,9 @@ FigDpi = 75
 # sweep_variable == name of sweep variable that you want to sweep. name must be in the input file.
 SweepVariablesSet = { 
     'NeumannBCEndDevice' : 
-                    {'ThicknessAlNSub': [300, 600, 1200, 1500, 1800, 2000]},
+                    {'ThicknessAlNSub'          : [300, 600, 1200, 1500, 1800, 2000]},
     'SchottkyBarrierEndDevice' : 
-                    {'ThicknessAlNSub': [300, 600, 1200, 1500, 1800, 2000]},
+                    {'ThicknessAlNSub'          : [300, 600, 1200, 1500, 1800, 2000]},
     'SchottkyContactScan'       : 
                     {'SchottkyBarrierHeight'    : np.linspace( 0.0,   4.0, num= 9)},
     'BandgapBowingScan'         :
@@ -222,7 +223,7 @@ SweepVariablesSet = {
     'PyroelectricBowingScan'    : 
                     {'AlGaNpyroelectricBowing'  : [-0.1, -0.021, 0.0]},
     'BarrierThicknessScan' : 
-                    {'ThicknessAlGaNBarrier': [10, 25, 50, 75, 100, 150, 200, 250, 300]},
+                    {'ThicknessAlGaNBarrier'    : [10, 25, 50, 75, 100, 150, 200, 250, 300]},
     'ChannelThicknessScan'      : 
                     {'ThicknessAlGaNChannel'    : np.linspace(50.0, 600.0, num=23)},
     'CompositionGradLengthScan2DEG' : 
@@ -248,12 +249,12 @@ SweepVariablesSet = {
                      'ThicknessAlGaNBarrier'    : np.linspace( 5.0,  50.0, num=10)
                      }
 }
-# SweepVariablesSet = { 
-#     'NeumannBCEndDevice' : 
-#                     {'ThicknessAlNSub': [300, 600, 1200, 1500, 1800, 2000]},
-#     'SchottkyBarrierEndDevice' : 
-#                     {'ThicknessAlNSub': [300, 600, 1200, 1500, 1800, 2000]}   
-# }
+SweepVariablesSet = { 
+    'NeumannBCEndDevice' : 
+                    {'ThicknessAlNSub': [300, 600, 1200, 1500, 1800, 2000]},
+    'SchottkyBarrierEndDevice' : 
+                    {'ThicknessAlNSub': [300, 600, 1200, 1500, 1800, 2000]}   
+}
 
 # For specific samples only sweep channel thickness and composition gradient
 SpecificSamplesCase = ['BarrierThicknessScan', 'ChannelThicknessScan', 'IntentionalDopingConcScanSC',
@@ -307,7 +308,7 @@ def create_tmp_input_file_4_sweep(ScanVariableName, base_input_path, mapps_, Fil
 
 # ## 2. Perform simulations
 
-# In[17]:
+# In[54]:
 
 
 for input_path in input_files_dest:
@@ -359,14 +360,14 @@ for input_path in input_files_dest:
 
 # ## 3. Create post-processed data sheet from sweep simulations
 
-# In[14]:
+# In[55]:
 
 
 what_to_plots = ['2DEG', '2DHG']
 plot_data_files = ['integrated_density_electron.dat', 'integrated_density_hole.dat']
 
 
-# In[19]:
+# In[56]:
 
 
 if create_data_sweep:
@@ -450,18 +451,18 @@ if create_data_sweep:
 
 # ### 3.1 Plot band diagram from single simulation results (** Require original simulation results)
 
-# In[20]:
+# In[57]:
 
 
 # Define the region of band digram you want to zoom in
 # [[xmin, xmax], [which_band(s)], [shift_yr, y_left_major_locator_distance]]
 # zoom_band_diagram_regions = [[['QRegion_Left_2DEG', 'QRegion_Right_2DEG'], ['Gamma_', 'electron_Fermi_level_'], [-1, 1]],
 #                              [['QRegion_Left_2DHG', 'QRegion_Right_2DHG'], ['HH_', 'LH_', 'SO_', 'electron_Fermi_level_'], [-1, 0.2]]]
-zoom_band_diagram_regions = [[['EndAlGaNBarrier', 10], ['Gamma_', 'electron_Fermi_level_'], [-1, 1]],
-                             [['EndAlGaNChannel', 10], ['HH_', 'LH_', 'SO_', 'electron_Fermi_level_'], [-1, 0.2]]]
+zoom_band_diagram_regions = [[['EndAlGaNBarrier', 10], ['Gamma_', 'electron_Fermi_level_'], [-1, 0.4]],
+                             [['EndAlGaNChannel', 10], ['HH_', 'LH_', 'SO_', 'electron_Fermi_level_'], [-1, 0.4]]]
 
 
-# In[21]:
+# In[67]:
 
 
 #%matplotlib inline 
@@ -497,6 +498,7 @@ if do_plot:
         for zoom_region in zoom_band_diagram_regions:
             density_list=[('Electron_density', 'r'), ('Hole_density', 'b')]
             if i == 0: density_list=density_list[-1::-1]
+            fig, ax, ax0, ax2 =\
             lplt1d.PlotBandDiagrams(data_folder_, figs_path=output_figs, software_=software_, 
                                     filename=f'band_edges_zoom_r{i}', savefigure=savefigure,
                                     FigDpi=FigDpi, FigFormat=FigFormat,xaxis_n_locator=None,
@@ -504,11 +506,53 @@ if do_plot:
                                     x_zoom_2nd_no_shift=True, right_yaxis_shift=zoom_region[2][0],
                                     y_left_major_locator_distance=zoom_region[2][1],
                                     density_list=density_list, plot_density=True, 
-                                    show_twin_yaxis_labels=True)
+                                    show_twin_yaxis_labels=True, align_left_right_yaxis=True)
             i+=1
 
 
-# In[22]:
+# In[59]:
+
+
+#%matplotlib inline 
+#%matplotlib ipympl
+savefigure=True
+if do_plot:
+    for input_path in input_files_dest:
+        print(f"{'*'*72}")
+        input_filename = input_path.split('/')[-1]
+        input_file_name_variable = input_filename.replace(FileExtension, '')
+        data_folder_ = nn.DataFolder(f'{folder_output_}/{input_file_name_variable}')
+        output_figs = data_folder_.fullpath.replace('OUTPUTs','FIGs')
+        print('- Output data folder:', data_folder_.fullpath)
+        print('- Figure folder:', output_figs)
+        # Plot band edges zoomed in the 2DEG and 2DHG regions
+        kindex = 0
+        plot_band_indices = {1:'tab:red',2:'tab:blue',3:'cyan'} #band_index, color 
+        band_plot = {'Gamma_': 'quantum_2DEG_Gamma', 'HH_': 'quantum_2DHG_HH', 'kp6':'quantum_2DHG_kp6'}
+        for zoom_region in zoom_band_diagram_regions:
+            i = 0
+            for band_index, color_ in plot_band_indices.items():
+                density_list=[('PsiSqare', color_)]
+                if i == 0: 
+                    fig=None; ax=None; ax0=None; ax2=None
+                fig, ax, ax0, ax2 = \
+                    lplt1d.PlotBandDiagrams(data_folder_, fig=fig, ax=ax, ax0=ax0, ax2=ax2, 
+                                            software_=software_, savefigure=False, xaxis_n_locator=None,
+                                            x_zoom_region=zoom_region[0], plot_bands=zoom_region[1],
+                                            x_zoom_2nd_no_shift=True, right_yaxis_shift=None,
+                                            y_left_major_locator_distance=zoom_region[2][1],
+                                            band_file=band_plot[zoom_region[1][0]], 
+                                            band_index=band_index, kindex=kindex,
+                                            subband_energy_level=True, plot_density_on_left_axis=True,
+                                            density_list=density_list, plot_density=True, ylabel_twin=None,
+                                            show_twin_yaxis_labels=True)
+                i += 1
+                    
+            lpltgen.save_figs(fig, filename=f'Psi_sqr_{band_plot[zoom_region[1][0]]}', figs_path=output_figs, savefigure=savefigure,
+                              FigFormat=FigFormat, FigDpi=FigDpi)
+
+
+# In[60]:
 
 
 if do_plot:
@@ -545,7 +589,7 @@ if do_plot:
 
 # ### 3.2 Plot band diagram from sweep results (** Require original simulation results)
 
-# In[23]:
+# In[43]:
 
 
 if do_plot_sweep:
@@ -581,13 +625,29 @@ if do_plot_sweep:
                     data_folder_sweep = nn.DataFolder(sweep_folder_path_)
                     output_figs_sweep = data_folder_sweep.fullpath.replace('OUTPUTs','FIGs')
                     print(f'-- Plotting: {data_folder_sweep.fullpath}')
-                     #==========================================================================
-                    # Plot band edges + device structure
-                    lplt1d.PlotBandDiagrams(data_folder_sweep, show_doping=False, show_Qregion=False,
+                    #==========================================================================
+                    # Plot band edges + carrier density + device structure
+                    lplt1d.PlotBandDiagrams(data_folder_sweep, show_doping=False, show_Qregion=True,
                                             figs_path=output_figs_sweep, FigDpi=FigDpi, filename='band_edges_device',
                                             savefigure=savefigure, software_=software_, FigFormat=FigFormat, 
                                             density_list=[('Electron_density', 'r'), ('Hole_density', 'b')],
                                             plot_density=True, plot_device_sketch=True, show_twin_yaxis_labels=True)
+                    
+                    if SweepVariablesKeys[0] in ['ThicknessAlNSub']:
+                        # Plot band edges + potential + device structure
+                        fig, ax, ax0, ax2 = \
+                        lplt1d.PlotBandDiagrams(data_folder_sweep, show_doping=False, show_Qregion=False,
+                                                software_=software_, FigFormat=FigFormat, line_alpha=0.4,
+                                                density_list=[('Electron_density', 'r'), ('Hole_density', 'b')],
+                                                plot_density=True, plot_device_sketch=True, show_twin_yaxis_labels=True)
+                        lplt1d.PlotBandDiagrams(data_folder_sweep, fig=fig, ax=ax, 
+                                                show_doping=False, show_Qregion=False,
+                                                figs_path=output_figs_sweep, FigDpi=FigDpi, filename='potential',
+                                                savefigure=True, software_=software_, FigFormat=FigFormat, 
+                                                density_list=[('Potential', 'c')], ylabel_twin=None,
+                                                plot_density=True, plot_density_on_left_axis=True,
+                                                plot_device_sketch=False, right_yaxis_shift=None,
+                                                show_twin_yaxis_labels=True)
 
                     #==========================================================================
                     if 'IntentionalDopingConcScan' in ScanVariableName:
@@ -750,7 +810,7 @@ if do_plot_sweep:
                 #=============================================================================================
 
 
-# In[27]:
+# In[32]:
 
 
 if do_plot_sweep:
@@ -913,7 +973,7 @@ if do_plot_sweep:
                                       savefigure=savefigure)
 
 
-# In[22]:
+# In[24]:
 
 
 if do_plot_sweep:
@@ -945,14 +1005,14 @@ if do_plot_sweep:
             df = pd.read_excel(excel_file, sheet_name=data_sheet_name, index_col=0)
             df['2DEG_device_rescale'] =  df['2DEG_device'].copy()/rescale_2deg_fact
             df['2DHG_device_rescale'] =  df['2DHG_device'].copy()/rescale_2deg_fact
-            vmin, vmax = df['2DEG_device_rescale'].min(), df['2DEG_device_rescale'].max()
-            norm, cbar_mapable = lpltq3d.CreateColorbarMapableObject(vmin=vmin, vmax=vmax, color_map=color_map)
             
             df_cap_thickness_group = df.groupby(['ThicknessAlGaNBarrier']) # Group by thickness
             x_label_text = 'Al composition channel'
             y_label_text = 'Al composition barrier'
             z_label_unit = r'($10^{13}$ $\mathrm{cm}^{-2}$)'
             for iii, what_to_plot in enumerate(what_to_plots):
+                vmin, vmax = df[f'{what_to_plot}_device_rescale'].min(), df[f'{what_to_plot}_device_rescale'].max()
+                norm, cbar_mapable = lpltq3d.CreateColorbarMapableObject(vmin=vmin, vmax=vmax, color_map=color_map)
                 for name, group in df_cap_thickness_group:
                     print(f'- Plotting barrier thickness - {what_to_plot} = {name[0]:.2f} nm')
                     ##### Generate data with interpolation
@@ -976,4 +1036,10 @@ if do_plot_sweep:
                                                   FigDpi=FigDpi, FigFormat=FigFormat, 
                                                   figs_path=output_figs_sweep_tmp,
                                                   savefigure=savefigure)
+
+
+# In[ ]:
+
+
+
 

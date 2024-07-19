@@ -186,9 +186,9 @@ $QRegion_Right_2DEG            = $QRegion_Left_2DEG + $QR_width_2DEG            
 
 #---------------------------------------------------------------------------------------------------
 # Define coordinate of 2DHG quantum region.
-# As the 2DHG WFs extend more towards right we shift the Qregion only 1/4th to left boundary.
+# As the 2DHG WFs extend more towards left we shift the Qregion only 3/4th to left boundary.
 #---------------------------------------------------------------------------------------------------
-$LeftShift_2DHG_Boundary   = $QR_width_2DHG * 0.25
+$LeftShift_2DHG_Boundary   = $QR_width_2DHG * 0.75
 $RightShift_2DHG_Boundary  = $QR_width_2DHG - $LeftShift_2DHG_Boundary
 $QRLeft_2DHG_Position      = $EndAlGaNChannel - $LeftShift_2DHG_Boundary
 

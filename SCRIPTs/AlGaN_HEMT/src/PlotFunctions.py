@@ -24,22 +24,80 @@ plt.rcParams.update(params)
 plt.rc('font', size=24)
 
 ## ============================================================================
-class _general_plot_functions:
+class general_plot_functions:
     def __init__(self):
         pass
     
     @classmethod
-    def _save_figs(cls, fig, filename:str='test', figs_path='.', savefigure:bool=False, 
+    def save_figs(cls, fig, filename:str='test', figs_path='.', savefigure:bool=False, 
                    FigFormat='.png', FigDpi:int=75):
-        if savefigure:
+        if savefigure and fig is not None:
             mkdir_if_not_exist(figs_path)
             filename_ = f'{filename}{FigFormat}'
             fig.savefig(os.path.join(figs_path, filename_), bbox_inches='tight', dpi=FigDpi) 
             plt.close()
         return
     
+    def _align_yaxis_np(self, axes):
+        """
+        Align zeros of the two axes, zooming them out by same ratio
+        Source: https://stackoverflow.com/a/46901839
+        """
+        axes = np.array(axes)
+        extrema = np.array([ax.get_ylim() for ax in axes])
+    
+        # reset for divide by zero issues
+        for i in range(len(extrema)):
+            if np.isclose(extrema[i, 0], 0.0):
+                extrema[i, 0] = -1
+            if np.isclose(extrema[i, 1], 0.0):
+                extrema[i, 1] = 1
+    
+        # upper and lower limits
+        lowers = extrema[:, 0]
+        uppers = extrema[:, 1]
+        print(lowers, uppers)
+        # if all pos or all neg, don't scale
+        all_positive = False
+        all_negative = False
+        if lowers.min() > 0.0:
+            all_positive = True
+    
+        if uppers.max() < 0.0:
+            all_negative = True
+    
+        if all_negative or all_positive:
+            # don't scale
+            return
+    
+        # pick "most centered" axis
+        res = abs(uppers+lowers)
+        min_index = np.argmin(res)
+    
+        # scale positive or negative part
+        multiplier1 = abs(uppers[min_index]/lowers[min_index])
+        multiplier2 = abs(lowers[min_index]/uppers[min_index])
+    
+        for i in range(len(extrema)):
+            # scale positive or negative part based on which induces valid
+            if i != min_index:
+                lower_change = extrema[i, 1] * -1*multiplier2
+                upper_change = extrema[i, 0] * -1*multiplier1
+                if upper_change < extrema[i, 1]:
+                    extrema[i, 0] = lower_change
+                else:
+                    extrema[i, 1] = upper_change
+    
+            # bump by 10% for a margin
+            extrema[i, 0] *= 1.1
+            extrema[i, 1] *= 1.1
+    
+        # set axes limits
+        [axes[i].set_ylim(*extrema[i]) for i in range(len(extrema))]
 
-class Plot1DFuns(_general_plot_functions):
+    
+
+class Plot1DFuns(general_plot_functions):
     def __init__(self):
         pass
     
@@ -68,6 +126,9 @@ class Plot1DFuns(_general_plot_functions):
                          plot_bands:list=['Gamma_','HH_','LH_','SO_',
                                           'electron_Fermi_level_'],
                          bands_characters:dict = None):
+        if plot_bands is None or len(plot_bands) < 1:
+            print('Skipping band edge plot. Nothing to plot.')
+            return ax
         XX = df_band_edge.coords['x'].value
         xunit = f"{df_band_edge.coords['x'].unit}"
         yunit = f"{df_band_edge.variables['Gamma_'].unit}" # eV
@@ -105,22 +166,25 @@ class Plot1DFuns(_general_plot_functions):
         ax.set_xlim(xlimit)
         return ax
         
-    def _plot_right_twin_band_edges(self, ax, density_list, y_label:str='Carrier concentration',
-                                    show_twin_yaxis_labels:bool=False, set_ymin:float=None):
-        ax2 = ax.twinx()  
-        ax2_unit = '10$^{{18}}$ cm$^{{-3}}$' #f'{df_e_density.variables['Electron_density'].unit}' # 10$^{{18}}$ cm$^{{-3}}$
+    def _plot_density_plots(self, ax2, density_list, ax2_unit:str=None,
+                            label_size=18, 
+                            y_label:str='Carrier concentration', line_alpha=1.0,
+                            show_twin_yaxis_labels:bool=False, set_ymin:float=None):
+        if ax2_unit is None:
+            ax2_unit = '10$^{{18}}$ cm$^{{-3}}$' #f'{df_e_density.variables['Electron_density'].unit}' # 10$^{{18}}$ cm$^{{-3}}$
         #======================================================================
         for key, color_, val in density_list:
-            ax2.plot(val.coords['x'].value, val.variables[key].value , color=color_)
+            ax2.plot(val.coords['x'].value, val.variables[key].value , color=color_, alpha=line_alpha)
         #======================================================================
         if show_twin_yaxis_labels:
-            ax2.set_ylabel(f'{y_label} ({ax2_unit})', size=18) 
+            if y_label and label_size: 
+                ax2.set_ylabel(f'{y_label} ({ax2_unit})', size=label_size) 
             ax2.tick_params(axis='y', labelcolor='k')
         else:
             ax2.set_yticks([])
         #======================================================================
         if set_ymin: ax2.set_ylim(ymin=set_ymin)
-        return ax, ax2
+        return ax2
     
     def _plot_device_sketch(self, ax0, df_input_variables, df_composition, 
                             show_doping:bool=False, show_Qregion:bool=False,
@@ -159,33 +223,39 @@ class Plot1DFuns(_general_plot_functions):
         ax0.set_xlim(xmax=df_input_variables['EndDevice'].value+1)
         return ax0
     
-    def PlotBandDiagrams(self, data_folder_, show_doping:bool=False, show_Qregion:bool=False, 
+    def PlotBandDiagrams(self, data_folder_, fig=None, ax=None, ax0=None, ax2=None,
+                         show_doping:bool=False, show_Qregion:bool=False, line_alpha=1.0,
                          xlabel:str="Distance", ylabel:str='Energy', ylabel_twin:str='Carrier concentration',
                          figs_path='.', FigDpi:int=300, filename:str='test', device_cmap='ocean',
                          xaxis_n_locator:int=6, y_left_major_locator_distance:int=2,
                          savefigure:bool=False, software_='nextnano++',
                          FigFormat:str='.png', plot_device_sketch:bool=False,
                          density_list=[('Electron_density', 'r'), ('Hole_density', 'b')],
-                         plot_density:bool=False, show_twin_yaxis_labels:bool=False, 
+                         band_file:str=None, band_index:int=0, kindex:int=0, 
+                         subband_energy_level:bool=True, plot_density:bool=False, 
+                         show_twin_yaxis_labels:bool=False, twin_yaxis_unit:str=None,
                          right_yaxis_shift:float=-1, show_legend:bool=False,
                          x_zoom_region:list=[None, None], x_zoom_2nd_no_shift:bool=False,
-                         bands_characters:dict = None,
-                         plot_bands:list=['Gamma_','HH_','LH_','SO_', 'electron_Fermi_level_']
-                         ):
+                         bands_characters:dict = None, plot_density_on_left_axis:bool=False,
+                         plot_bands:list=['Gamma_','HH_','LH_','SO_', 'electron_Fermi_level_'], 
+                         align_left_right_yaxis:bool=False):
         # default is band edges only. extra plots will be drawn on the twin axis
         # plot_eh_density: plot electron-hole density
         # plot_pol_charge: plot polarization change density
         #======================================================================
         bias_folder = data_folder_.folders['bias_00000']
         strain_folder = data_folder_.folders['Strain']
-        #quantum_data_folder = data_folder_.go_to('bias_00000', 'Quantum')
+        quantum_data_folder = data_folder_.go_to('bias_00000', 'Quantum')
         structure_data_folder = data_folder_.folders['Structure']
         #======================================================================
-        ax, ax0, ax2 = None, None, None
-        if plot_device_sketch:
-            fig, (ax0, ax) = plt.subplots(2,1, height_ratios=[1, 6], sharex=True, constrained_layout=True)
+        if any([ax, ax0, ax2]):
+            pass
         else:
-            fig, ax = plt.subplots(1)
+            ax, ax0, ax2 = None, None, None
+            if plot_device_sketch:
+                fig, (ax0, ax) = plt.subplots(2,1, height_ratios=[1, 6], sharex=True, constrained_layout=True)
+            else:
+                fig, ax = plt.subplots(1)
         
         # *********************************************************************
         ##### Plot band edges
@@ -216,28 +286,48 @@ class Plot1DFuns(_general_plot_functions):
             for ddensity_details in density_list:
                 if ddensity_details[0] == 'Electron_density':
                     density_file = bias_folder.file('density_electron.dat')
-                    col_name = 'Electron_density'
+                    col_name = ['Electron_density']
                 elif ddensity_details[0] == 'Hole_density':
                     density_file = bias_folder.file('density_hole.dat')
-                    col_name = 'Hole_density'
+                    col_name = ['Hole_density']
+                elif ddensity_details[0] == 'Potential':
+                    density_file = bias_folder.file('potential.dat')
+                    col_name = ['Potential']
+                elif ddensity_details[0] == 'PsiSqare':
+                    assert band_file is not None, 'Provide the which band file to plot.'
+                    psi_sqr_data_folder = quantum_data_folder.go_to(band_file, f'kIndex_{kindex:05d}')
+                    density_file = psi_sqr_data_folder.file(f'probability_shift_{band_file}_{band_index:04d}.dat')
+                    col_name = [f'Psi^2_{band_index}_']
+                    if subband_energy_level: col_name.append(f'E_{band_index}_')
                 elif ddensity_details[0] == 'Polarization_density':
                     density_file = strain_folder.file('density_polarization_charge.dat')
-                    col_name = 'Density'
+                    col_name = ['Density']
                 elif  ddensity_details[0] == 'Pizoelectric_density':
                     density_file = strain_folder.file('density_piezoelectric_charge.dat')
-                    col_name = 'Density'
+                    col_name = ['Density']
                 elif ddensity_details[0] == 'Pyroelectric_density':
                     density_file = strain_folder.file('density_pyroelectric_charge.dat')
-                    col_name = 'Density'
+                    col_name = ['Density']
                 else:
                     raise ValueError('Requested density plot is not implemented yet.')
-
-                new_density_list.append((col_name, ddensity_details[1], 
-                                         nn.DataFile(density_file, product=software_)))
+                
+                for col_nam in col_name:
+                    new_density_list.append((col_nam, ddensity_details[1], 
+                                             nn.DataFile(density_file, product=software_)))
             #==================================================================
-            ax, ax2 = self._plot_right_twin_band_edges(ax, density_list=new_density_list,
-                                                       y_label=ylabel_twin, set_ymin=right_yaxis_shift,
-                                                       show_twin_yaxis_labels=show_twin_yaxis_labels)
+            if plot_density_on_left_axis:
+                ax = self._plot_density_plots(ax, density_list=new_density_list,
+                                              y_label=ylabel_twin, set_ymin=right_yaxis_shift,
+                                              show_twin_yaxis_labels=show_twin_yaxis_labels,
+                                              ax2_unit=twin_yaxis_unit, line_alpha=line_alpha)
+            else:
+                ax2 = ax.twinx() 
+                ax2 = self._plot_density_plots(ax2, density_list=new_density_list,line_alpha=line_alpha,
+                                               y_label=ylabel_twin, set_ymin=right_yaxis_shift,
+                                               show_twin_yaxis_labels=show_twin_yaxis_labels)
+                
+                if align_left_right_yaxis: 
+                    self._align_yaxis_np([ax, ax2])
     
         # *********************************************************************
         ##### Plot band edges with device structure
@@ -256,7 +346,8 @@ class Plot1DFuns(_general_plot_functions):
         
         if show_legend: ax.legend()
         
-        self._save_figs(fig, filename=filename, figs_path=figs_path, 
+        
+        self.save_figs(fig, filename=filename, figs_path=figs_path, 
                         savefigure=savefigure, FigFormat=FigFormat, FigDpi=FigDpi)
         return fig, ax, ax0, ax2
         
@@ -282,12 +373,12 @@ class Plot1DFuns(_general_plot_functions):
 
         if x_log_scale: ax.set_xscale('log')
 
-        self._save_figs(fig, filename=filename, figs_path=figs_path, 
+        self.save_figs(fig, filename=filename, figs_path=figs_path, 
                         savefigure=savefigure, FigFormat=FigFormat, FigDpi=FigDpi)
         return fig, ax
     
     
-class PlotQuasi3DFuns(_general_plot_functions):
+class PlotQuasi3DFuns(general_plot_functions):
     def __init__(self):
         pass    
     
@@ -361,6 +452,6 @@ class PlotQuasi3DFuns(_general_plot_functions):
             axs.yaxis.set_major_locator(ticker.MultipleLocator(base=tick_multiplicator[2]))
             axs.yaxis.set_minor_locator(ticker.MultipleLocator(base=tick_multiplicator[3]))
             
-        self._save_figs(fig, filename=filename, figs_path=figs_path, 
+        self.save_figs(fig, filename=filename, figs_path=figs_path, 
                         savefigure=savefigure, FigFormat=FigFormat, FigDpi=FigDpi)
         return fig, axs

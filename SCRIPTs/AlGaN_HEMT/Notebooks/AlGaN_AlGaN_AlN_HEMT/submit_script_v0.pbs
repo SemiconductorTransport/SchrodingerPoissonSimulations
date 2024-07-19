@@ -22,7 +22,7 @@ module load nextnano/condanextnano
 ## =================== Set job submit directory ==========================
 JOB_DIRECTORY='/sfiwork/badal.mondal/Projects/DeviceSimulation/NextnanoSimulations/SCRIPTs/AlGaN_HEMT/Notebooks/AlGaN_AlGaN_AlN_HEMT'
 cd $JOB_DIRECTORY
-python nnp_1d_2DEHG_density_laptop.py 
+python nnp_1d_2DEHG_density.py
 
 wait
 exit
