@@ -7,10 +7,9 @@ Created on Tue Jul  2 08:56:43 2024
 """
 import os
 import numpy as np
-import pandas as pd
 import nextnanopy as nn
 from nextnanopy.utils.misc import mkdir_if_not_exist
-import matplotlib as mpl
+from matplotlib import colors, cm
 import matplotlib.pyplot as plt 
 import matplotlib.ticker as ticker
 import matplotlib.patches as patches
@@ -36,47 +35,78 @@ class _general_plot_functions:
             mkdir_if_not_exist(figs_path)
             filename_ = f'{filename}{FigFormat}'
             fig.savefig(os.path.join(figs_path, filename_), bbox_inches='tight', dpi=FigDpi) 
-            #plt.close()
+            plt.close()
         return
     
 
 class Plot1DFuns(_general_plot_functions):
     def __init__(self):
         pass
+    
+    @staticmethod
+    def _bands_characterstics_plot(bands_characterstics=None):
+        # band_name: (band_label_name_to_pu_in_plot_label, color_to_use)
+        defau_characterstics = {'Gamma_':('Gamma', 'k'),
+                                'HH_':('heavy hole', 'y'),
+                                'LH_':('light hole', 'tab:blue'),
+                                'SO_':('crystal-field hole', 'g'),
+                                'electron_Fermi_level_':('Fermi level', 'gray')
+                                }
+        if bands_characterstics is None:
+            return defau_characterstics
+        else:
+            tmp = defau_characterstics.copy()
+            for chrt in defau_characterstics:
+                if bands_characterstics.get(chrt):
+                    tmp[chrt] = bands_characterstics.get(chrt)
+            return tmp
 
     def _plot_band_edges(self, ax, df_band_edge, xlabel:str="Distance", 
-                         ylabel:str='Energy', xaxis_n_locator:int=6):
+                         ylabel:str='Energy', xaxis_n_locator:int=6,
+                         y_major_locator_distance:int=2,
+                         x_zoom_region:list=[None, None],
+                         plot_bands:list=['Gamma_','HH_','LH_','SO_',
+                                          'electron_Fermi_level_'],
+                         bands_characters:dict = None):
         XX = df_band_edge.coords['x'].value
         xunit = f"{df_band_edge.coords['x'].unit}"
-        xlimit = [XX.min(), XX.max()]
-        device_length = xlimit[1] - xlimit[0]
-        ttm = device_length//xaxis_n_locator
-        x_major_locator_division = ttm - (ttm%10)
-        #======================================================================
-        ax.plot(XX, df_band_edge.variables['Gamma_'].value, label='Gamma', color='k')
-        ax.plot(XX, df_band_edge.variables['HH_'].value, label='heavy hole', color='y')
-        ax.plot(XX, df_band_edge.variables['LH_'].value, label='light hole', color='tab:blue')
-        ax.plot(XX, df_band_edge.variables['SO_'].value, label='crystal-field hole', color='g')
-        ax.plot(XX, df_band_edge.variables['electron_Fermi_level_'].value, color='gray')
-        #======================================================================
         yunit = f"{df_band_edge.variables['Gamma_'].unit}" # eV
+
+        xlimit = [XX.min(), XX.max()]
+        xlimit = [x_zoom_ if x_zoom_ is not None else xlimit[ii] for ii, x_zoom_ in enumerate(x_zoom_region)]
+        pos_ = [np.argmax(XX > xlimit[0]), np.argwhere(XX< xlimit[1])[-1][0]]
+               
+        bands_characters = self._bands_characterstics_plot(bands_characterstics=bands_characters)
+        #======================================================================
+        for band_plot in plot_bands:
+            YY = df_band_edge.variables[band_plot].value
+            YY_ = YY[pos_[0]:pos_[1]]
+            ax.plot(XX[pos_[0]:pos_[1]], YY_, 
+                    label=bands_characters.get(band_plot)[0],
+                    color=bands_characters.get(band_plot)[1])
+        #======================================================================
         ax.set_ylabel(f"{ylabel} ({yunit})")
         ax.set_xlabel(f'{xlabel} ({xunit})')
         # xticks_location =[KK.value for KK in df_input_variables if KK.name.startswith('End')]
         # ax.set_xticks(xticks_location)
         # ax.xaxis.set_tick_params(rotation=45)
         #======================================================================
-        ax.xaxis.set_major_locator(ticker.MultipleLocator(base=x_major_locator_division))
-        ax.xaxis.set_major_formatter('{x:.0f}')
-        ax.xaxis.set_minor_locator(ticker.MultipleLocator(base=x_major_locator_division//2))
-        ax.yaxis.set_major_locator(ticker.MultipleLocator(base=2))
-        ax.yaxis.set_minor_locator(ticker.MultipleLocator(base=1))
+        if xaxis_n_locator is not None:
+            ttm = (xlimit[1] - xlimit[0])//xaxis_n_locator
+            x_major_locator_division = ttm - (ttm%10)
+            ax.xaxis.set_major_locator(ticker.MultipleLocator(base=x_major_locator_division))
+            ax.xaxis.set_major_formatter('{x:.0f}')
+            ax.xaxis.set_minor_locator(ticker.MultipleLocator(base=x_major_locator_division/2))
+            
+        if y_major_locator_distance:
+            ax.yaxis.set_major_locator(ticker.MultipleLocator(base=y_major_locator_distance))
+            ax.yaxis.set_minor_locator(ticker.MultipleLocator(base=y_major_locator_distance/2))
         #======================================================================
         ax.set_xlim(xlimit)
         return ax
         
-    def _plot_right_twin_band_edges(self, ax, density_list, y_label:str='Electron concentration', 
-                                    show_twin_yaxis_labels:bool=False, set_ymin:bool=True):
+    def _plot_right_twin_band_edges(self, ax, density_list, y_label:str='Carrier concentration',
+                                    show_twin_yaxis_labels:bool=False, set_ymin:float=None):
         ax2 = ax.twinx()  
         ax2_unit = '10$^{{18}}$ cm$^{{-3}}$' #f'{df_e_density.variables['Electron_density'].unit}' # 10$^{{18}}$ cm$^{{-3}}$
         #======================================================================
@@ -85,11 +115,11 @@ class Plot1DFuns(_general_plot_functions):
         #======================================================================
         if show_twin_yaxis_labels:
             ax2.set_ylabel(f'{y_label} ({ax2_unit})', size=18) 
-            ax2.tick_params(axis='y', labelcolor='r')
+            ax2.tick_params(axis='y', labelcolor='k')
         else:
             ax2.set_yticks([])
         #======================================================================
-        if set_ymin: ax2.set_ylim(ymin=-1)
+        if set_ymin: ax2.set_ylim(ymin=set_ymin)
         return ax, ax2
     
     def _plot_device_sketch(self, ax0, df_input_variables, df_composition, 
@@ -120,20 +150,28 @@ class Plot1DFuns(_general_plot_functions):
                                   df_input_variables['ThicknessContact'].value, 2, 
                                   linewidth=1, edgecolor=None, linestyle='--',facecolor='yellow')
         rect2 = patches.Rectangle((df_input_variables['StartContact'].value, -0.5), 
-                                  df_input_variables['EndDevice'].value-1, 2, 
+                                  df_input_variables['EndDevice'].value, 2, 
                                   linewidth=1, edgecolor='k', linestyle='-',fill=False)
         #======================================================================
         ax0.add_patch(rect1)
         ax0.add_patch(rect2)
         ax0.set_ylim(-0.55, 1.5)
+        ax0.set_xlim(xmax=df_input_variables['EndDevice'].value+1)
         return ax0
     
     def PlotBandDiagrams(self, data_folder_, show_doping:bool=False, show_Qregion:bool=False, 
+                         xlabel:str="Distance", ylabel:str='Energy', ylabel_twin:str='Carrier concentration',
                          figs_path='.', FigDpi:int=300, filename:str='test', device_cmap='ocean',
+                         xaxis_n_locator:int=6, y_left_major_locator_distance:int=2,
                          savefigure:bool=False, software_='nextnano++',
                          FigFormat:str='.png', plot_device_sketch:bool=False,
-                         plot_pol_charge:bool=False, plot_eh_density:bool=False,
-                         show_twin_yaxis_labels:bool=False, show_legend:bool=False):
+                         density_list=[('Electron_density', 'r'), ('Hole_density', 'b')],
+                         plot_density:bool=False, show_twin_yaxis_labels:bool=False, 
+                         right_yaxis_shift:float=-1, show_legend:bool=False,
+                         x_zoom_region:list=[None, None], x_zoom_2nd_no_shift:bool=False,
+                         bands_characters:dict = None,
+                         plot_bands:list=['Gamma_','HH_','LH_','SO_', 'electron_Fermi_level_']
+                         ):
         # default is band edges only. extra plots will be drawn on the twin axis
         # plot_eh_density: plot electron-hole density
         # plot_pol_charge: plot polarization change density
@@ -154,46 +192,52 @@ class Plot1DFuns(_general_plot_functions):
         # *********************************************************************
         band_edges_file = bias_folder.file('bandedges.dat')
         df_band_edge = nn.DataFile(band_edges_file, product=software_)
-        ax = self._plot_band_edges(ax, df_band_edge)
+        
+        if any(x_zoom_region): 
+            input_variables_file = data_folder_.file('variables_input.txt')
+            df_input_variables = nn.DataFile(input_variables_file, product=software_)
+            x_zoom = [df_input_variables.variables[jj].value if isinstance(jj, str) else jj for jj in x_zoom_region]
+            if x_zoom_2nd_no_shift:
+                x_zoom = [x_zoom[0]-x_zoom[1], x_zoom[0]+x_zoom[1]]
+        else:
+            x_zoom = x_zoom_region[:]
+        
+        ax = self._plot_band_edges(ax, df_band_edge, xlabel=xlabel, ylabel=ylabel, 
+                                   xaxis_n_locator=xaxis_n_locator, 
+                                   y_major_locator_distance=y_left_major_locator_distance,
+                                   x_zoom_region=x_zoom, plot_bands=plot_bands,
+                                   bands_characters=bands_characters)
         
         # *********************************************************************
         ##### Plot electron and hole density
         # *********************************************************************
-        if plot_eh_density:
+        if plot_density:
+            new_density_list = []
+            for ddensity_details in density_list:
+                if ddensity_details[0] == 'Electron_density':
+                    density_file = bias_folder.file('density_electron.dat')
+                    col_name = 'Electron_density'
+                elif ddensity_details[0] == 'Hole_density':
+                    density_file = bias_folder.file('density_hole.dat')
+                    col_name = 'Hole_density'
+                elif ddensity_details[0] == 'Polarization_density':
+                    density_file = strain_folder.file('density_polarization_charge.dat')
+                    col_name = 'Density'
+                elif  ddensity_details[0] == 'Pizoelectric_density':
+                    density_file = strain_folder.file('density_piezoelectric_charge.dat')
+                    col_name = 'Density'
+                elif ddensity_details[0] == 'Pyroelectric_density':
+                    density_file = strain_folder.file('density_pyroelectric_charge.dat')
+                    col_name = 'Density'
+                else:
+                    raise ValueError('Requested density plot is not implemented yet.')
+
+                new_density_list.append((col_name, ddensity_details[1], 
+                                         nn.DataFile(density_file, product=software_)))
             #==================================================================
-            e_density_file = bias_folder.file('density_electron.dat')
-            h_density_file = bias_folder.file('density_hole.dat')
-            #==================================================================
-            df_e_density = nn.DataFile(e_density_file, product=software_)
-            df_h_density = nn.DataFile(h_density_file, product=software_)
-            #==================================================================
-            ax, ax2 = self._plot_right_twin_band_edges(ax, density_list=[('Electron_density', 'r', df_e_density),
-                                                                         ('Hole_density', 'b', df_h_density)], 
-                                                       y_label='Electron concentration', set_ymin=True,
+            ax, ax2 = self._plot_right_twin_band_edges(ax, density_list=new_density_list,
+                                                       y_label=ylabel_twin, set_ymin=right_yaxis_shift,
                                                        show_twin_yaxis_labels=show_twin_yaxis_labels)
-            #==================================================================
-    
-        # *********************************************************************
-        ##### Plot band edges with polarization charge
-        # *********************************************************************
-        if plot_pol_charge:
-            #==================================================================
-            polarization_file = strain_folder.file('density_polarization_charge.dat')
-            #piezoelectric_file = strain_folder.file('density_piezoelectric_charge.dat')
-            #pyroelectric_file = strain_folder.file('density_pyroelectric_charge.dat')
-            #==================================================================
-            df_pol_density = nn.DataFile(polarization_file, product=software_)
-            #df_piezo_density = nn.DataFile(piezoelectric_file, product=software_)
-            #df_pyro_density = nn.DataFile(pyroelectric_file, product=software_)
-            #==================================================================
-            # ax, ax2 = PlotRightTwinBandEdges(ax, density_list=[('Density', 'r', df_piezo_density),
-            #                                                         ('Density', 'b', df_pyro_density)],
-            #                         show_twin_yaxis_labels=True, y_label='Charge density', set_ymin=False)
-            ax, ax2 = self._plot_right_twin_band_edges(ax, density_list=[('Density', 'r', df_pol_density)], 
-                                                       y_label='Pol. charge density', set_ymin=False,
-                                                       show_twin_yaxis_labels=show_twin_yaxis_labels)
-            ax.set_ylim(ymin=None)
-            #==================================================================
     
         # *********************************************************************
         ##### Plot band edges with device structure
@@ -217,9 +261,9 @@ class Plot1DFuns(_general_plot_functions):
         return fig, ax, ax0, ax2
         
     def PlotSweepsData(self, XX, YY, fig=None, ax=None, x_label:str='', y_label:str='', x_log_scale:bool=False, 
-                   tick_multiplicator:list=[None, None, None, None],
-                   line_style='-', marker='.', color='r', FigDpi:int=75, FigFormat='.png',
-                   figs_path='.', filename:str='test', savefigure:bool=False):
+                       tick_multiplicator:list=[None, None, None, None],
+                       line_style='-', marker='o', color='r', FigDpi:int=75, FigFormat='.png',
+                       figs_path='.', filename:str='test', savefigure:bool=False):
         if fig is None and ax is None:
             fig, ax = plt.subplots(1, constrained_layout=True)
         ax.set_xlabel(x_label)
@@ -272,29 +316,44 @@ class PlotQuasi3DFuns(_general_plot_functions):
             zi = self._linear_interpolation(triang, xi, yi, z_values)
         return xi, yi, zi
     
-    def PlotContour(self, xi, yi, zi, vmin=0, vmax=3.2, x_label:str='', y_label:str='',
+    def CreateColorbarMapableObject(self, vmin=None, vmax=None, color_map='viridis'):
+        norm = colors.Normalize(vmin=vmin, vmax=vmax)
+        mappable = cm.ScalarMappable(norm=norm, cmap=color_map)
+        return norm, mappable
+    
+    def PlotContour(self, xi, yi, zi, x_label:str='', y_label:str='',
                     title_label:str=None, z_label:str='', 
                     tick_multiplicator:list=[None, None, None, None],
                     FigDpi:int=75, FigFormat='.png', figs_path='.', 
+                    vmin=None, vmax=None, cbar_mappable=None, norm=None,
+                    color_map='viridis', show_contour_lines:bool=False, 
+                    cbar_text:str=None,
                     filename:str='test', savefigure:bool=False):
         # Set up the figure
         fig, axs = plt.subplots(constrained_layout=True)
 
         # Plot linear interpolation to quad grid.
-        pcm0 = axs.contourf(xi, yi, zi, vmin = 0, vmax = 3.2)
-        #axs.contour(cs, colors='k', linewidths=1)
+        CS = axs.contourf(xi, yi, zi, cmap=color_map)
+        
+        if norm is not None: CS.set_norm(norm)
+        
+        if show_contour_lines: 
+            CS2 = axs.contour(CS, levels=CS.levels, colors='k')
+            
+        if cbar_mappable is None:
+            cbar = fig.colorbar(CS, ax=axs)
+        else:
+            cbar = fig.colorbar(cbar_mappable, ax=axs)
+            
+        cbar.ax.set_ylabel(cbar_text)
+
         # Plot the triangulation.
         #cs = axs.tricontourf(triang, ZZ, vmin = vmin, vmax = vmax)
         #axs.tricontour(cs, colors='k', linewidths=1)
         axs.set_ylabel(y_label)
         axs.set_xlabel(x_label)
         if title_label is not None: axs.set_title(title_label)
-        
-        print(pcm0)
-        cbar = fig.colorbar(pcm0, ax=axs, location='right', label=z_label,
-                           norm=mpl.colors.Normalize(vmin=0, vmax=3.2), boundaries=np.linspace(0, 3.2, 6))
-        #cbar.set_clim(0, 3.2)
-        #cbar =fig.colorbar(m, boundaries=np.linspace(0, 3., 6))
+
         if all(tick_multiplicator[:2]):
             axs.xaxis.set_major_locator(ticker.MultipleLocator(base=tick_multiplicator[0]))
             axs.xaxis.set_minor_locator(ticker.MultipleLocator(base=tick_multiplicator[1]))

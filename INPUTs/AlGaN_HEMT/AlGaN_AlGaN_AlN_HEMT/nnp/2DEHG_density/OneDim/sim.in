@@ -13,7 +13,10 @@
 <variables>
  $calculation_2deg    = 1               # 1 = single-band, 2 = 6-band, 3 = 8-band, 4 = 6-band+1-band    (ListOfValues:1,2,3,4) (HighlightInUserInterface)
  $calculation_2dhg    = 1               # 1 = single-band, 2 = 6-band, 3 = 8-band, 4 = 6-band+1-band    (ListOfValues:1,2,3,4) (HighlightInUserInterface)
+ $calc_mobility       = 0               # perform mobility calculations    (ListOfValues:0,1) (HighlightInUserInterface)
 </variables>
+
+$end_device_air       = 0               # the end surface of the device is device-air interface or periodic? (ListOfValues:0,1) (HighlightInUserInterface)
 
 #---------------------------------------------------------------------------------------------------
 # Define auxiliary variables representing the choice of quantum calculations in 2DEG and 2DHG quantum regions
@@ -26,13 +29,13 @@ $single_band_kp_6band_2deg    = ( 1 - $calculation_2deg ) * ( 2 - $calculation_2
 $single_band_only_2dhg        = ( 2 - $calculation_2dhg ) * ( 3 - $calculation_2dhg ) * ( 4 - $calculation_2deg ) # /=0 for single-band              (DoNotShowInUserInterface)
 $kp_6band_2dhg                = ( 1 - $calculation_2dhg ) * ( 3 - $calculation_2dhg ) * ( 4 - $calculation_2deg ) # /=0 for 6-band                   (DoNotShowInUserInterface)
 $kp_8band_2dhg                = ( 1 - $calculation_2dhg ) * ( 2 - $calculation_2dhg ) * ( 4 - $calculation_2deg ) # /=0 for 8-band                   (DoNotShowInUserInterface)
-$single_band_kp_6band_2deg    = ( 1 - $calculation_2deg ) * ( 2 - $calculation_2deg ) * ( 3 - $calculation_2deg ) # /=0 for 6-band+single-band       (DoNotShowInUserInterface)
+$single_band_kp_6band_2dhg    = ( 1 - $calculation_2deg ) * ( 2 - $calculation_2deg ) * ( 3 - $calculation_2deg ) # /=0 for 6-band+single-band       (DoNotShowInUserInterface)
 
 #++++++++++++++++++++++++
 $NumberOfEigenvaluesGamma   =  50   # number of eigenvalues to be calculated for Gamma valley (DoNotShowInUserInterface)
 $NumberOfEigenvaluesL       =   0   # number of eigenvalues to be calculated for L valley     (DoNotShowInUserInterface)
 $NumberOfEigenvaluesDelta   =   0   # number of eigenvalues to be calculated for Delta valley (DoNotShowInUserInterface)
-$NumberOfEigenvaluesHoles   =  50   # number of eigenvalues to be calculated for holes        (DoNotShowInUserInterface)
+$NumberOfEigenvaluesHoles   =  100   # number of eigenvalues to be calculated for holes        (DoNotShowInUserInterface)
 
 $Include_L_and_Delta    = 0         # include L and Delta valleys. AlGaN is direct throughout. (ListOfValues:0,1)
 
@@ -50,6 +53,11 @@ $use_k_subspace                     = no   # use k.p subspace approximation (Lis
 $AlContentBarrier  = 1.00            # alloy content in Barrier          (DisplayUnit:)(RangeOfValues:From=...,To=...,Step=...)(HighlightInUserInterface)
 $AlContentChannel  = 0.75            # alloy content in channel          (DisplayUnit:)(RangeOfValues:From=...,To=...,Step=...)(HighlightInUserInterface)
 $AlContentSub      = 1.00            # alloy content in Substrate/Buffer (DisplayUnit:)(RangeOfValues:From=...,To=...,Step=...)(HighlightInUserInterface)
+
+#---------------------------------------------------------------------------------------------------
+# Strain relaxation in the layer
+#---------------------------------------------------------------------------------------------------
+$StrainRelaxation  = 0.0      # residuals strain in substrate, scales lattice parameter of the substrate only for the purpose of strain computation. according to the formula a_s,eta = (1+eta)a_0,s. Value betwwen [-1.0,1.0].
 
 #---------------------------------------------------------------------------------------------------
 # Polarization doping / composition gradient parameters (Channel-Barrier interface)
@@ -75,10 +83,19 @@ $ThicknessAlGaNBarrier    =  30.0    # thickness of AlGaN barrier    (ListOfValu
 $ThicknessAlGaNChannel    = 300.0    # thickness of AlGaN channel    (ListOfValues:...)(DisplayUnit:nm)(HighlightInUserInterface)
 $ThicknessAlNSub          = 300.0    # thickness of AlN substrate                      (DisplayUnit:nm)(HighlightInUserInterface)
 
+!IF($end_device_air)
+    $ThicknessEndContact = 2.0       # thickness of contact at end                     (DisplayUnit:nm)(HighlightInUserInterface)
+!ELSE
+    $ThicknessEndContact = 0.0
+!ENDIF
+
 $EffectiveThicknessAlGaNBarrier    =  $ThicknessAlGaNBarrier - ($CompositionGradLength2DEG * $EffectiveBarrier) # effective thickness of AlGaN barrier  (DisplayUnit:nm)(HighlightInUserInterface)
 
-$QR_width_2DEG            =  $CompositionGradLength2DEG + 80.0          # width of quantum region of 2DEG (DisplayUnit:nm)(HighlightInUserInterface)
-$QR_width_2DHG            =  $CompositionGradLength2DHG + 80.0          # width of quantum region of 2DHG (DisplayUnit:nm)(HighlightInUserInterface)
+$DEG_QR_width            =  40.0          # width of quantum region of 2DEG (DisplayUnit:nm)(HighlightInUserInterface)
+$DHG_QR_width            =  40.0          # width of quantum region of 2DHG (DisplayUnit:nm)(HighlightInUserInterface)
+
+$QR_width_2DEG            =  $CompositionGradLength2DEG + $DEG_QR_width          # width of total quantum region of 2DEG (DisplayUnit:nm)(HighlightInUserInterface)
+$QR_width_2DHG            =  $CompositionGradLength2DHG + $DHG_QR_width          # width of total quantum region of 2DHG (DisplayUnit:nm)(HighlightInUserInterface)
 
 #---------------------------------------------------------------------------------------------------
 # Unintentional Doping parameters (at Substrate-Channel-Barrier)
@@ -93,8 +110,8 @@ $UnintentionalDopingSubConcentration      = 150E18                              
 #---------------------------------------------------------------------------------------------------
 # Intentional Doping parameters (Barrier-Channel interface)
 #---------------------------------------------------------------------------------------------------
-$IntentionalDopingBCLength  = 0.0                # thickness of Doping barrier-channel interface=> delta doping (DisplayUnit:nm)(HighlightInUserInterface)
-$IntentionalDopingBCConcentration  = 150E18      # dopinng concentration: 150 * 10^18 cm^-3 = 1.5 * 10^20 cm^-3 (DisplayUnit:cm^-3)(HighlightInUserInterface)
+$IntentionalDopingBCLength  = 0.0                 # thickness of Doping barrier-channel interface=> delta doping (DisplayUnit:nm)(HighlightInUserInterface)
+$IntentionalDopingBCConcentration  = 150E18       # dopinng concentration: 150 * 10^18 cm^-3 = 1.5 * 10^20 cm^-3 (DisplayUnit:cm^-3)(HighlightInUserInterface)
 
 #---------------------------------------------------------------------------------------------------
 # Intentional Doping parameters (Substrate-Channel interface)
@@ -113,7 +130,7 @@ $SchottkyBarrierHeight         = ($AlContentBarrier*$AlNSchottkyBarrierHeight) +
 #---------------------------------------------------------------------------------------------------
 # Define Temeperature
 #---------------------------------------------------------------------------------------------------
-$Temperature             = 300                      # temperature: 300 K (DisplayUnit:K)
+$Temperature                   = 300                      # temperature: 300 K (DisplayUnit:K)
 
 #---------------------------------------------------------------------------------------------------
 # Set grid spacings
@@ -148,15 +165,17 @@ $EndDevice             = $EndAlNSub                                             
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Check if 2DEG Left boundary is left to the Barrier start
+# As the 2DEG WFs extend more towards right we shift the Qregion only 1/4th to left boundary.
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-$QRLeft_2DEG_Boundary          = ($StartAlGaNChannel - $EndAlGaNBarrier) - $QR_width_2DEG * 0.5
+$LeftShift_2DEG_Boundary       = $QR_width_2DEG * 0.25
+$QRLeft_2DEG_Boundary          = ($StartAlGaNChannel - $StartAlGaNBarrier) - $LeftShift_2DEG_Boundary
 $IsBarrierThin                 = $QRLeft_2DEG_Boundary <= 0
 !IF($IsBarrierThin)
    $DoNotIgnoreLeftDegGridLine = 0                                                      # ignore adding grid line latter with WHEN condition
    $Shift_Left_2DEG_Boundary   = $EffectiveThicknessAlGaNBarrier + $CompositionGradLength2DEG
 !ELSE
    $DoNotIgnoreLeftDegGridLine = 1
-   $Shift_Left_2DEG_Boundary   = $QR_width_2DEG * 0.5
+   $Shift_Left_2DEG_Boundary   = $LeftShift_2DEG_Boundary
 !ENDIF
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -167,8 +186,11 @@ $QRegion_Right_2DEG            = $QRegion_Left_2DEG + $QR_width_2DEG            
 
 #---------------------------------------------------------------------------------------------------
 # Define coordinate of 2DHG quantum region.
+# As the 2DHG WFs extend more towards right we shift the Qregion only 1/4th to left boundary.
 #---------------------------------------------------------------------------------------------------
-$QRLeft_2DHG_Position          = $EndAlGaNChannel - ($QR_width_2DHG * 0.5)
+$LeftShift_2DHG_Boundary   = $QR_width_2DHG * 0.25
+$RightShift_2DHG_Boundary  = $QR_width_2DHG - $LeftShift_2DHG_Boundary
+$QRLeft_2DHG_Position      = $EndAlGaNChannel - $LeftShift_2DHG_Boundary
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Check if 2DHG Left boundary is left to the 2DEG right boundary
@@ -200,7 +222,7 @@ $IsTooThinChannel              = $LeftDHG_ChannelEnd_Speration <= 0
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Set the 2DHG width after checking channel width
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-$QR_width_2DHG_updated         = ($QR_width_2DHG * 0.5)  +  $LeftDHG_ChannelEnd_Speration
+$QR_width_2DHG_updated         = $RightShift_2DHG_Boundary  +  $LeftDHG_ChannelEnd_Speration
 $Negative_Right_2DHG           = $QR_width_2DHG_updated <= 0
 
 !IF($Negative_Right_2DHG)
@@ -251,15 +273,15 @@ $StartUDopingSubRegion       = $StartAlNSub                                     
 $EndUDopingSubRegion         = $StartUDopingSubRegion + $UnintentionalDopingSubLength               # (DisplayUnit:nm)(DoNotShowInUserInterface)
 
 #---------------------------------------------------------------------------------------------------
-# Define coordinate of intentional doping region (Barrier-Channel interface)
+# Define coordinate of intentional doping region in Barrier region (Barrier-Channel interface)
 #---------------------------------------------------------------------------------------------------
-$StartIDopingBCRegion   = $EndAlGaNChannel                                      # (DisplayUnit:nm)(DoNotShowInUserInterface)
-$EndIDopingBCRegion     = $StartIDopingBCRegion + $IntentionalDopingBCLength    # (DisplayUnit:nm)(DoNotShowInUserInterface)
+$StartIDopingBCRegion   = $EndAlGaNBarrier  + (sign($IntentionalDopingBCLength)*$ThicknessAlGaNBarrier/5)         # (DisplayUnit:nm)(DoNotShowInUserInterface)
+$EndIDopingBCRegion     = $StartIDopingBCRegion + $IntentionalDopingBCLength                                      # (DisplayUnit:nm)(DoNotShowInUserInterface)
 
 #---------------------------------------------------------------------------------------------------
 # Define coordinate of intentional doping region (Substrate-Channel interface)
 #---------------------------------------------------------------------------------------------------
-$StartIDopingSCRegion   = $EndAlGaNBarrier #+10                                 # (DisplayUnit:nm)(DoNotShowInUserInterface)
+$StartIDopingSCRegion   = $EndAlGaNChannel  #+10                                # (DisplayUnit:nm)(DoNotShowInUserInterface)
 $EndIDopingSCRegion     = $StartIDopingSCRegion + $IntentionalDopingSCLength    # (DisplayUnit:nm)(DoNotShowInUserInterface)
 
 #---------------------------------------------------------------------------------------------------
@@ -314,6 +336,7 @@ grid{
 !WHEN $DoNotIgnoreRightDhgGridLine     line{ pos =  $QRegion_Right_2DHG      spacing = $Spacing_QR}
 !WHEN $DoNotIgnoreMidSubGridLine       line{ pos =  $MiddleAlNSub            spacing = $Spacing_Sub}
                                        line{ pos =  $EndAlNSub               spacing = $Spacing_Sub}
+!WHEN $end_device_air                  line{ pos =  $EndAlNSub+$ThicknessEndContact           spacing = $Spacing_Contact}
    }
 }
 
@@ -671,7 +694,7 @@ structure{
          name    = "Al(x)Ga(1-x)N"        # ternary material name for this region with constant alloy profile
          alloy_x = $AlContentBarrier      # x content of the alloy (minimum value is 0.0, maximum value is 1.0)
      }
-      contact { name = "Air_Schottky"}
+     contact { name = "Air_Schottky"}
    }
    #................................................................................................................
 
@@ -739,6 +762,18 @@ structure{
       #    name = "AlN"
       # }
    }
+
+   #...........Schottky contact at substrate end device............................................................
+   !WHEN $end_device_air region{
+   !WHEN $end_device_air  line{
+   !WHEN $end_device_air      x = [$EndDevice, $EndDevice+$ThicknessEndContact]
+   !WHEN $end_device_air    }
+   !WHEN $end_device_air  ternary_constant{
+   !WHEN $end_device_air      name    = "Al(x)Ga(1-x)N"      # ternary material name for this region with constant alloy profile
+   !WHEN $end_device_air      alloy_x = $AlContentSub        # x content of the alloy (minimum value is 0.0, maximum value is 1.0).
+   !WHEN $end_device_air  }
+   !WHEN $end_device_air  contact { name = "end_device_air_Schottky"}
+   !WHEN $end_device_air }
    #................................................................................................................
 
    #.................Unintentional doping:(ignored when $UnintentionalDopingBarrierLength = 0)......................
@@ -783,7 +818,7 @@ structure{
    !WHEN $UnintentionalDopingSubLength }
    #................................................................................................................
 
-   #..............Intentional doping at Barrier-Channel:(ignored when $IntentionalDopingBCLength = 0)...............
+   #.......Intentional doping at Barrier in Barrier-Channel:(ignored when $IntentionalDopingBCLength = 0)..........
    !WHEN $IntentionalDopingBCLength region{
    !WHEN $IntentionalDopingBCLength   line{
    !WHEN $IntentionalDopingBCLength      x = [$StartIDopingBCRegion, $EndIDopingBCRegion]
@@ -809,11 +844,12 @@ structure{
    !WHEN $IntentionalDopingSCLength      }
    !WHEN $IntentionalDopingSCLength   }
    !WHEN $IntentionalDopingSCLength }
+
    #................................................................................................................
 
    region{
       line{
-         x = [$StartDevice, $EndDevice]
+         x = [$StartDevice, $EndDevice+$ThicknessEndContact]
       }
       integrate{                            # spatial integration of profiles in this region.
          electron_density{}                 # integrate electron density.
@@ -822,6 +858,30 @@ structure{
          pyro_density{}                    # integrate pyro charge density.
          polarization_density{}            # integrate the polarization charges density. ( = piezo + pyro)
          label = "Whole_Device"             # (optional) defines meaningful label for columns in output files.
+      }
+   }
+
+   region{
+      line{
+         x = [$QRegion_Left_2DEG, $QRegion_Right_2DEG]
+      }
+      integrate{                            # spatial integration of profiles in this region.
+         electron_density{}                 # integrate electron density.
+         hole_density{}                     # integrate hole density.
+         polarization_density{}            # integrate the polarization charges density. ( = piezo + pyro)
+         label = "Qregion_2EG"             # (optional) defines meaningful label for columns in output files.
+      }
+    }
+
+    region{
+      line{
+         x = [$QRegion_Left_2DHG, $QRegion_Right_2DHG]
+      }
+      integrate{                            # spatial integration of profiles in this region.
+         electron_density{}                 # integrate electron density.
+         hole_density{}                     # integrate hole density.
+         polarization_density{}            # integrate the polarization charges density. ( = piezo + pyro)
+         label = "Qregion_2HG"             # (optional) defines meaningful label for columns in output files.
       }
    }
     #................................................................................................................
@@ -863,6 +923,11 @@ contacts{
        bias = 0
        barrier = $SchottkyBarrierHeight     # define reference energy
    }
+   !WHEN $end_device_air schottky{
+   !WHEN $end_device_air    name = end_device_air_Schottky
+   !WHEN $end_device_air    bias = 0
+   !WHEN $end_device_air    barrier = 3.125     # 1/2 of AlN bandgap=3.125 eV, GaN=1.75 eV
+   !WHEN $end_device_air }
 }
 #===================================================================================================
 
@@ -878,8 +943,9 @@ classical{
    output_bandedges{ averaged = no }
    output_carrier_densities{}
    output_bandgap{}
-   !WHEN $DopingChannelLength output_ionized_dopant_densities{}
-   !WHEN $DopingChannelLength output_intrinsic_density{}
+
+   output_ionized_dopant_densities{}
+   output_intrinsic_density{}
 }
 
 #===================================================================================================
@@ -901,7 +967,7 @@ quantum{
       !ELIF($kp_6band_2deg)
          no_density = no # quantum mechanical charge density is calculated. If yes: only wave functions are calculated, not charge densities
          kp_6band{
-            num_ev = $NumberOfEigenvaluesHoles
+            num_ev = 2*$NumberOfEigenvaluesHoles
             k_integration{
                relative_size = 1.0
                num_points    = 10
@@ -916,7 +982,7 @@ quantum{
             }
          no_density = no # quantum mechanical charge density is calculated. If yes: only wave functions are calculated, not charge densities
          kp_6band{
-            num_ev = $NumberOfEigenvaluesHoles
+            num_ev = 2*$NumberOfEigenvaluesHoles
             k_integration{
                relative_size = 1.0
                num_points    = 10
@@ -966,7 +1032,17 @@ quantum{
             }
       !ENDIF
 
-      output_wavefunctions{ energy_shift=shifted amplitudes = no  probabilities = yes  max_num = 9999 all_k_points = yes structured=yes}
+      output_wavefunctions{energy_shift = shifted
+                           amplitudes = no
+                           probabilities = yes
+                           in_one_file = no
+                           max_num = 9999
+                           all_k_points = no
+                           structured=yes
+                           }
+      output_subband_densities{max_num = 3
+                              in_one_file = no
+                              }
    }
 
    #----------------------------2D-hole gas region-------------------------------------------------
@@ -984,7 +1060,7 @@ quantum{
       !ELIF($kp_6band_2dhg)
          no_density = no # quantum mechanical charge density is calculated. If yes: only wave functions are calculated, not charge densities
          kp_6band{
-            num_ev = $NumberOfEigenvaluesHoles
+            num_ev = 2*$NumberOfEigenvaluesHoles
             k_integration{
                relative_size = 1.0
                num_points    = 10
@@ -999,7 +1075,7 @@ quantum{
             }
          no_density = no # quantum mechanical charge density is calculated. If yes: only wave functions are calculated, not charge densities
          kp_6band{
-            num_ev = $NumberOfEigenvaluesHoles
+            num_ev = 2*$NumberOfEigenvaluesHoles
             k_integration{
                relative_size = 1.0
                num_points    = 10
@@ -1038,7 +1114,17 @@ quantum{
          SO{ num_ev = $NumberOfEigenvaluesHoles}
       !ENDIF
 
-      output_wavefunctions{ energy_shift=shifted amplitudes = no  probabilities = yes  max_num = 9999 all_k_points = yes structured=yes}
+      output_wavefunctions{energy_shift = shifted
+                           amplitudes = no
+                           probabilities = yes
+                           in_one_file = no
+                           max_num = 9999
+                           all_k_points = no
+                           structured=yes
+                           }
+      output_subband_densities{max_num = 3
+                              in_one_file = no
+                              }
    }
 
    #-------------exchange_correlation() only supports single band, ignored for kp------------------
@@ -1056,10 +1142,13 @@ quantum{
 # Define calculators
 #===================================================================================================
 strain{
-   pseudomorphic_strain{}
+   pseudomorphic_strain{}                                 # homogeneous strain for 1D layer structures (analytical calculation).
+   #minimized_strain{}                                    # minimization of the elastic energy for 2D and 3D geometries (numerical calculation). In 1D, this is equivalent to pseudomorphic_strain.
+   residual_strain = $StrainRelaxation                    # residuals strain in the substrate scales lattice parameter of the substrate (only for the purpose of strain computation)
 
    output_strain_tensor{ simulation_system = yes }
    output_polarization_charges{}
+   output_polarization_vector{}
    output_hydrostatic_strain{ }
 
    output_lattice_constants{}
@@ -1072,27 +1161,27 @@ poisson{
    charge_neutral{}
    output_potential{}
    output_electric_field{}
-   # newton_solver{ search_steps = 50 }
 }
 
 currents{
+   !WHEN $calc_mobility mobility_model = constant
    recombination_model{
       SRH         = no
       Auger       = no
       radiative   = no
    }
    output_fermi_levels{}
-   # output_mobilities{}
+   !WHEN $calc_mobility output_mobilities{}
 }
 
 output{
-   material_parameters{
-         deformation_potentials{}
-         kp_parameters{}
-         #charge_carrier_masses{}
-         #static_dielectric_constants{}
-         #spin_orbit_coupling_energies{}
-      }
+   #material_parameters{
+         #deformation_potentials{}          # output the deformation potentials for zinc blende and wurtzite in units of [eV].
+         #kp_parameters{}                   # output parameters of materials in quantum regions where 6-band or 8-band k.p Hamiltonian was solved.
+         #charge_carrier_masses{}           # output effective masses of all energy bands used in the simulatios in units of [m0].
+         #static_dielectric_constants{}     # output static relative dielectric constants wurtzite (3 parameters) (unitless).
+         #spin_orbit_coupling_energies{}    # output crystal-field splitting and spin-orbit coupling energies for wurtzite (3 parameters) in units of [eV].
+   #   }
 }
 #===================================================================================================
 
@@ -1102,8 +1191,28 @@ output{
 #===================================================================================================
 run{
    strain{}
-   poisson{}
-   quantum_poisson{ residual = 1e5 }
+   !IF($calc_mobility)
+      current_poisson{
+                      iterations = 100                      # maximum number of iterations, i.e. self-consistency cycles
+                      output_log = yes                      # output of convergence of Schrödinger-Poisson equation (residuals for quantum_poisson) into the logfile iteration_quantum_poisson.dat
+                      alpha_fermi = 0.5
+                      current_repetitions = 4
+                     }
+      quantum_current_poisson{residual = 1e4                        # defines requested residual of the integrated total charge carrier density changes.
+                              iterations = 100                      # maximum number of iterations, i.e. self-consistency cycles
+                              output_log = yes                      # output of convergence of Schrödinger-Poisson equation (residuals for quantum_poisson) into the logfile iteration_quantum_poisson.dat
+                              #output_local_residuals = yes
+                              current_repetitions = 4
+                              }
+   !ELSE
+      poisson{}
+      quantum_poisson{residual = 1e4                        # defines requested residual of the integrated total charge carrier density changes.
+                     iterations = 100                      # maximum number of iterations, i.e. self-consistency cycles
+                     output_log = yes                      # output of convergence of Schrödinger-Poisson equation (residuals for quantum_poisson) into the logfile iteration_quantum_poisson.dat
+                     #output_local_residuals = yes
+                     }
+   !ENDIF
+
 }
 #===================================================================================================
 #===================================================================================================
