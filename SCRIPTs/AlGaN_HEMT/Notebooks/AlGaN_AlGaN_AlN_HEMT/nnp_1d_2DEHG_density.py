@@ -5,7 +5,7 @@
 
 # ## 1. General settings
 
-# In[44]:
+# In[1]:
 
 
 submit_cluster = 0 # Submit the job to the cluster or not.
@@ -13,7 +13,7 @@ submit_cluster = 0 # Submit the job to the cluster or not.
 
 # ### 1.1 Import modules
 
-# In[45]:
+# In[2]:
 
 
 if not submit_cluster:
@@ -23,7 +23,7 @@ if not submit_cluster:
 
 # ### 1.1.1 Adding local module path to python module search path
 
-# In[46]:
+# In[3]:
 
 
 from pathlib import Path
@@ -35,7 +35,7 @@ sys.path.append(module_path)
 
 # #### 1.1.2 Import global modules
 
-# In[47]:
+# In[4]:
 
 
 import shutil
@@ -54,7 +54,7 @@ from matplotlib.widgets import Slider
 
 # #### 1.1.2 Import local defined modules
 
-# In[48]:
+# In[5]:
 
 
 from src.PlotFunctions import general_plot_functions, Plot1DFuns, PlotQuasi3DFuns
@@ -65,7 +65,7 @@ lpltq3d = PlotQuasi3DFuns()
 
 # ### 1.2 Matplotlib settings
 
-# In[49]:
+# In[6]:
 
 
 params = {'figure.figsize': (8, 6), 'legend.fontsize': 18, 'axes.labelsize': 24, 'axes.titlesize': 24,
@@ -78,7 +78,7 @@ plt.rc('font', size=24)
 
 # ### 1.3 nextnanopy settings
 
-# In[50]:
+# In[7]:
 
 
 #%% ===========================================================================
@@ -109,23 +109,23 @@ print(f'-nextnano config: {nn.config}')
 
 # ### 1.4 Set tasks to perform
 
-# In[51]:
+# In[30]:
 
 
-run_sim = 1 # run single simulations
-run_sweep = 0 # run sweep simulations
+run_sim = 0 # run single simulations
+run_sweep = 1 # run sweep simulations
 run_sim_specific_sample = False # run single simulation for specific sample device
 run_sweep_specific_sample = False # run sweep simulation for specific sample device
-create_data_sweep = 0 # create required data sheet from seep simulation results
-append_new_sweep_data_2_data_base = 0 # append the new sweep data to existing data files. if False, rewrite the complete excel data file.
-do_plot = 1  # plot results of single simulation
+create_data_sweep = 1 # create required data sheet from seep simulation results
+append_new_sweep_data_2_data_base = 1 # append the new sweep data to existing data files. if False, rewrite the complete excel data file.
+do_plot = 0  # plot results of single simulation
 do_plot_sweep = 1 # plot results of sweep simulation
 savefigure = True # save the figures generated
 
 
 # ### 1.5 Input and output directories/files
 
-# In[52]:
+# In[9]:
 
 
 #++++++++++++++++++++++++++++++++++++++++++++++
@@ -200,11 +200,12 @@ mkdir_if_not_exist(folder_figs_)
 #++++++++++++++++++++++++++++++++++++++++++++++
 FigFormat = '.png'
 FigDpi = 75
+color_map = 'viridis'
 
 
 # ### 1.5 Sweep parameters
 
-# In[53]:
+# In[37]:
 
 
 # Specify sweep variables:
@@ -247,14 +248,17 @@ SweepVariablesSet = {
                     {'AlContentBarrier'         : np.linspace( 0.5,   1.0, num=11), 
                      'AlContentChannel'         : np.linspace( 0.5,   1.0, num=11),
                      'ThicknessAlGaNBarrier'    : np.linspace( 5.0,  50.0, num=10)
-                     }
+                     },
+    'GaNBarrierComposition' : 
+                    {'AlContentBarrier'         : np.linspace( 0.1,   1, num=19),
+                     'ThicknessAlGaNBarrier'    : np.linspace( 5.0,  50.0, num=10)}
 }
-SweepVariablesSet = { 
-    'NeumannBCEndDevice' : 
-                    {'ThicknessAlNSub': [300, 600, 1200, 1500, 1800, 2000]},
-    'SchottkyBarrierEndDevice' : 
-                    {'ThicknessAlNSub': [300, 600, 1200, 1500, 1800, 2000]}   
-}
+# SweepVariablesSet = { 
+#     'GaNBarrierComposition' : 
+#                     {'AlContentBarrier'         : np.linspace( 0.1,   1, num=19),
+#                      'ThicknessAlGaNBarrier'    : np.linspace( 5.0,  50.0, num=10)
+#                      }   
+# }
 
 # For specific samples only sweep channel thickness and composition gradient
 SpecificSamplesCase = ['BarrierThicknessScan', 'ChannelThicknessScan', 'IntentionalDopingConcScanSC',
@@ -277,7 +281,10 @@ TemporaryInputFiles4 = {'SchottkyBarrierEndDevice': {'SwitchKey': 'end_device_ai
                                                          'input_file_name': 'idoping_B'},
                         'IntentionalDopingConcScanBCC': {'SwitchKey': 'IntentionalDopingBCLength', 
                                                          'SwitchKey2': 1,
-                                                         'input_file_name': 'idoping_C'}}
+                                                         'input_file_name': 'idoping_C'},
+                       'GaNBarrierComposition'        : {'SwitchKey': 'AlContentChannel', 
+                                                         'SwitchKey2': 0.0,
+                                                         'input_file_name': 'GaN_C'}}
 
 ##=============================================================================
 ## Functions to screen conditional sweep variables set
@@ -308,7 +315,7 @@ def create_tmp_input_file_4_sweep(ScanVariableName, base_input_path, mapps_, Fil
 
 # ## 2. Perform simulations
 
-# In[54]:
+# In[38]:
 
 
 for input_path in input_files_dest:
@@ -360,14 +367,14 @@ for input_path in input_files_dest:
 
 # ## 3. Create post-processed data sheet from sweep simulations
 
-# In[55]:
+# In[39]:
 
 
 what_to_plots = ['2DEG', '2DHG']
 plot_data_files = ['integrated_density_electron.dat', 'integrated_density_hole.dat']
 
 
-# In[56]:
+# In[40]:
 
 
 if create_data_sweep:
@@ -451,7 +458,7 @@ if create_data_sweep:
 
 # ### 3.1 Plot band diagram from single simulation results (** Require original simulation results)
 
-# In[57]:
+# In[31]:
 
 
 # Define the region of band digram you want to zoom in
@@ -462,7 +469,7 @@ zoom_band_diagram_regions = [[['EndAlGaNBarrier', 10], ['Gamma_', 'electron_Ferm
                              [['EndAlGaNChannel', 10], ['HH_', 'LH_', 'SO_', 'electron_Fermi_level_'], [-1, 0.4]]]
 
 
-# In[67]:
+# In[32]:
 
 
 #%matplotlib inline 
@@ -589,7 +596,7 @@ if do_plot:
 
 # ### 3.2 Plot band diagram from sweep results (** Require original simulation results)
 
-# In[43]:
+# In[41]:
 
 
 if do_plot_sweep:
@@ -671,13 +678,13 @@ if do_plot_sweep:
 
 # ##### 3.2.1.1 Set mapping of x-axis labels and x-ticks locator for different sweep plots
 
-# In[11]:
+# In[42]:
 
 
 rescale_2deg_fact = 1e13  # Rescalings 2DEG in 10^13 unit
 
 
-# In[12]:
+# In[35]:
 
 
 ## Map of some variables Sweep variables for plotting
@@ -723,7 +730,7 @@ mappp_ = {'SchottkyBarrierHeight':{'x_label_text': 'Barrier height (eV)',
 
 # ##### 3.2.1.2 Plot 1D sweep variables vs property (e.g. 2DEG density)
 
-# In[26]:
+# In[43]:
 
 
 if do_plot_sweep:
@@ -740,7 +747,7 @@ if do_plot_sweep:
         for ScanVariableName, SweepVariables in SweepVariablesSet.items():
             if 'specific_sample_' in input_filename and ScanVariableName not in SpecificSamplesCase:
                 continue
-            if ScanVariableName in ['CompositionBThicknessScan']: continue
+            if ScanVariableName in ['CompositionBThicknessScan', 'GaNBarrierComposition']: continue
             #***************************************************************************
             # Set the output folder path
             SweepVariablesKeys = list(SweepVariables.keys())
@@ -810,7 +817,7 @@ if do_plot_sweep:
                 #=============================================================================================
 
 
-# In[32]:
+# In[47]:
 
 
 if do_plot_sweep:
@@ -826,6 +833,7 @@ if do_plot_sweep:
         # loop over sweep sets defined above
         ii = 0; tmp_savefig=False
         for ScanVariableName in ['SchottkyBarrierEndDevice', 'NeumannBCEndDevice']:
+            if ScanVariableName not in SweepVariablesSet: continue 
             if 'specific_sample_' in input_filename and ScanVariableName not in SpecificSamplesCase:
                 continue
             SweepVariables = SweepVariablesSet[ScanVariableName]
@@ -881,7 +889,7 @@ if do_plot_sweep:
 
 # ##### 3.2.1.3 Plot 3D sweep variables vs property (e.g. 2DEG density)
 
-# In[28]:
+# In[48]:
 
 
 if do_plot_sweep:
@@ -894,6 +902,7 @@ if do_plot_sweep:
         # loop over sweep sets defined above
         ScanVariableNamesList = ['CompositionBThicknessScan']
         for ScanVariableName in ScanVariableNamesList:
+            if ScanVariableName not in SweepVariablesSet: continue 
             SweepVariables = SweepVariablesSet[ScanVariableName]
             if 'specific_sample_' in input_filename and ScanVariableName not in SpecificSamplesCase:
                 continue
@@ -956,7 +965,7 @@ if do_plot_sweep:
                     ax[iii].axhline(color='k',ls='--')
             #=============================================================================================
             for iii, what_to_plot in enumerate(what_to_plots):
-                lplt1d._save_figs(fig[iii], filename=f'Comp_contrast_thickness_{what_to_plot}', 
+                lpltgen.save_figs(fig[iii], filename=f'Comp_contrast_thickness_{what_to_plot}', 
                                   figs_path=f'{output_figs_sweep}/Others', savefigure=savefigure, 
                                   FigDpi=FigDpi, FigFormat=FigFormat)          
 
@@ -966,14 +975,14 @@ if do_plot_sweep:
             tick_multiplicator = [10,5,0.1, 0.05]
             XX = np.array(output_data.index, dtype=float)
             YY = np.array(output_data['2DEG_x_intersect'], dtype=float)
-            _ = lplt1d.PlotSweepsData(XX, YY, x_label=z_label_text, y_label=x_label_text,
+            _ = lplt1d.PlotSweepsData(XX, YY, x_label='Critical barrier thickness (nm)', y_label='Critical composition contrast',
                                       tick_multiplicator=tick_multiplicator,
                                       FigDpi=FigDpi, FigFormat=FigFormat, color='k', marker='o',
                                       figs_path=f'{output_figs_sweep}/Others', filename=f'Critical_comp_contrast_2DEG',
                                       savefigure=savefigure)
 
 
-# In[24]:
+# In[49]:
 
 
 if do_plot_sweep:
@@ -986,6 +995,7 @@ if do_plot_sweep:
         # loop over sweep sets defined above
         ScanVariableNamesList = ['CompositionBThicknessScan']
         for ScanVariableName in ScanVariableNamesList:
+            if ScanVariableName not in SweepVariablesSet: continue
             SweepVariables = SweepVariablesSet[ScanVariableName]
             if 'specific_sample_' in input_filename and ScanVariableName not in SpecificSamplesCase:
                 continue
@@ -1016,7 +1026,6 @@ if do_plot_sweep:
                 for name, group in df_cap_thickness_group:
                     print(f'- Plotting barrier thickness - {what_to_plot} = {name[0]:.2f} nm')
                     ##### Generate data with interpolation
-                    XX, YY, ZZ = group['AlContentChannel'], group['AlContentBarrier'], group[f'{what_to_plot}_device_rescale']
                     xi, yi, zi = lpltq3d.InterPolation(group['AlContentChannel'], 
                                                        group['AlContentBarrier'],
                                                        group[f'{what_to_plot}_device_rescale'],
@@ -1026,7 +1035,6 @@ if do_plot_sweep:
                     output_figs_sweep_tmp = os.path.join(output_figs_sweep, what_to_plot)
                     fig, ax = lpltq3d.PlotContour(xi, yi, zi, vmin=vmin, vmax=vmax, 
                                                   x_label=x_label_text, y_label=y_label_text,
-                                                  z_label=z_label_text[iii],
                                                   tick_multiplicator=[0.1, 0.05, 0.1, 0.05],
                                                   title_label=f"Barrier thickness = {name[0]:.2f} nm", 
                                                   cbar_mappable=cbar_mapable, norm=norm,
@@ -1038,8 +1046,68 @@ if do_plot_sweep:
                                                   savefigure=savefigure)
 
 
-# In[ ]:
+# In[72]:
 
 
+if do_plot_sweep:
+    for input_path in input_files_dest:
+        print(f"{'*'*72}")
+        input_filename = input_path.split('/')[-1]
+        input_file_name_variable = input_filename.replace(FileExtension, '')  
+        excel_file = f'{folder_post_data_}/{input_file_name_variable}_post_process_data.xlsx'
+        #==============================================================================
+        # loop over sweep sets defined above
+        ScanVariableNamesList = ['GaNBarrierComposition']
+        for ScanVariableName in ScanVariableNamesList:
+            if ScanVariableName not in SweepVariablesSet: continue
+            SweepVariables = SweepVariablesSet[ScanVariableName]
+            if 'specific_sample_' in input_filename and ScanVariableName not in SpecificSamplesCase:
+                continue
+            #***************************************************************************
+            # Set the output folder path
+            SweepVariablesKeys = list(SweepVariables.keys())
+            SweepVariablesFolder ='__'.join(SweepVariablesKeys)
+            if ScanVariableName in TemporaryInputFiles4:
+                tmp_txt = TemporaryInputFiles4[ScanVariableName]['input_file_name']
+                data_sheet_name = f'{tmp_txt}_sweep__{SweepVariablesFolder}'
+            else:
+                data_sheet_name =  f'{input_file_name_variable}_sweep__{SweepVariablesFolder}'
 
+            print(f'- Reading data sheet: {data_sheet_name}')
+            #=============================================================================================
+            # Set figures directory
+            output_figs_sweep = os.path.join(folder_output_,data_sheet_name).replace('OUTPUTs','FIGs')
+            mkdir_if_not_exist(output_figs_sweep) 
+            print(f'- Figs directory: {output_figs_sweep}')
+        
+            #=============================================================================================
+            df = pd.read_excel(excel_file, sheet_name=data_sheet_name, index_col=0)
+            df['2DEG_device_rescale'] =  df['2DEG_device'].copy()/rescale_2deg_fact
+            df['2DHG_device_rescale'] =  df['2DHG_device'].copy()/rescale_2deg_fact
+            
+
+            x_label_text = 'Al composition barrier'
+            y_label_text = 'Barrier thickness (nm)'
+            z_label_unit = r'($10^{13}$ $\mathrm{cm}^{-2}$)'
+            for iii, what_to_plot in enumerate(what_to_plots):
+                vmin, vmax = df[f'{what_to_plot}_device_rescale'].min(), df[f'{what_to_plot}_device_rescale'].max()
+                norm, cbar_mapable = lpltq3d.CreateColorbarMapableObject(vmin=vmin, vmax=vmax, color_map=color_map)
+                ##### Generate data with interpolation
+                xi, yi, zi = lpltq3d.InterPolation(df['AlContentBarrier'], 
+                                                   df['ThicknessAlGaNBarrier'],
+                                                   df[f'{what_to_plot}_device_rescale'],
+                                                   method='linear', interpolation_points=20)
+    
+                ##### Plot composition map vs 2DEG
+                output_figs_sweep_tmp = os.path.join(output_figs_sweep, what_to_plot)
+                fig, ax = lpltq3d.PlotContour(xi, yi, zi, vmin=vmin, vmax=vmax, 
+                                              x_label=x_label_text, y_label=y_label_text,
+                                              tick_multiplicator=[0.2, 0.1, 10, 5],
+                                              cbar_mappable=cbar_mapable, norm=norm,
+                                              show_contour_lines=True,
+                                              cbar_text=f'{what_to_plot} density {z_label_unit}',
+                                              filename= f'GaNChannel_{what_to_plot}',
+                                              FigDpi=FigDpi, FigFormat=FigFormat, 
+                                              figs_path=output_figs_sweep_tmp,
+                                              savefigure=savefigure)
 

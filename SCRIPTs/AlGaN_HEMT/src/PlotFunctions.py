@@ -95,7 +95,29 @@ class general_plot_functions:
         # set axes limits
         [axes[i].set_ylim(*extrema[i]) for i in range(len(extrema))]
 
-    
+    @classmethod
+    def _set_colorbar(cls, axs, fig, CS=None, cbar_mappable=None, cbar_text:str=None):
+        if cbar_mappable is None:
+                cbar = fig.colorbar(CS, ax=axs)
+        else:
+            cbar = fig.colorbar(cbar_mappable, ax=axs)         
+        cbar.ax.set_ylabel(cbar_text)
+        return cbar
+
+    @classmethod
+    def _set_labels(cls, axs, x_label:str='', y_label:str='', title_label:str=None):
+        axs.set_ylabel(y_label)
+        axs.set_xlabel(x_label)
+        if title_label is not None: axs.set_title(title_label)
+
+    @classmethod
+    def _set_tickers(cls, axs, tick_multiplicator=[None]*4):
+        if all(tick_multiplicator[:2]):
+            axs.xaxis.set_major_locator(ticker.MultipleLocator(base=tick_multiplicator[0]))
+            axs.xaxis.set_minor_locator(ticker.MultipleLocator(base=tick_multiplicator[1]))
+        if all(tick_multiplicator[2:]):
+            axs.yaxis.set_major_locator(ticker.MultipleLocator(base=tick_multiplicator[2]))
+            axs.yaxis.set_minor_locator(ticker.MultipleLocator(base=tick_multiplicator[3]))
 
 class Plot1DFuns(general_plot_functions):
     def __init__(self):
@@ -352,24 +374,14 @@ class Plot1DFuns(general_plot_functions):
         return fig, ax, ax0, ax2
         
     def PlotSweepsData(self, XX, YY, fig=None, ax=None, x_label:str='', y_label:str='', x_log_scale:bool=False, 
-                       tick_multiplicator:list=[None, None, None, None],
+                       tick_multiplicator:list=[None, None, None, None], title_label:str=None,
                        line_style='-', marker='o', color='r', FigDpi:int=75, FigFormat='.png',
                        figs_path='.', filename:str='test', savefigure:bool=False):
         if fig is None and ax is None:
             fig, ax = plt.subplots(1, constrained_layout=True)
-        ax.set_xlabel(x_label)
-        ax.set_ylabel(y_label)
         ax.plot(XX, YY, ls=line_style, marker=marker, color=color)
-
-        if all(tick_multiplicator[:2]):
-            ax.xaxis.set_major_locator(ticker.MultipleLocator(base=tick_multiplicator[0]))
-            ax.xaxis.set_minor_locator(ticker.MultipleLocator(base=tick_multiplicator[1]))
-        if all(tick_multiplicator[2:]):
-            ax.yaxis.set_major_locator(ticker.MultipleLocator(base=tick_multiplicator[2]))
-            ax.yaxis.set_minor_locator(ticker.MultipleLocator(base=tick_multiplicator[3]))
-        
-        #ax.set_xlim(xmin=45)
-        #ax.set_ylim(ymin=0.835)
+        self._set_labels(ax, x_label=x_label, y_label=y_label, title_label=title_label)
+        self._set_tickers(ax, tick_multiplicator=tick_multiplicator)
 
         if x_log_scale: ax.set_xscale('log')
 
@@ -412,7 +424,8 @@ class PlotQuasi3DFuns(general_plot_functions):
         mappable = cm.ScalarMappable(norm=norm, cmap=color_map)
         return norm, mappable
     
-    def PlotContour(self, xi, yi, zi, x_label:str='', y_label:str='',
+    def PlotContour(self, xi, yi, zi, fig=None, axs=None,
+                    x_label:str='', y_label:str='',
                     title_label:str=None, z_label:str='', 
                     tick_multiplicator:list=[None, None, None, None],
                     FigDpi:int=75, FigFormat='.png', figs_path='.', 
@@ -420,38 +433,25 @@ class PlotQuasi3DFuns(general_plot_functions):
                     color_map='viridis', show_contour_lines:bool=False, 
                     cbar_text:str=None,
                     filename:str='test', savefigure:bool=False):
-        # Set up the figure
-        fig, axs = plt.subplots(constrained_layout=True)
 
-        # Plot linear interpolation to quad grid.
-        CS = axs.contourf(xi, yi, zi, cmap=color_map)
-        
-        if norm is not None: CS.set_norm(norm)
+        self.fig, axs = self._set_figure(fig=fig, axs=axs)
+
+        CS = axs.contourf(xi, yi, zi, cmap=color_map, norm=norm)
         
         if show_contour_lines: 
             CS2 = axs.contour(CS, levels=CS.levels, colors='k')
-            
-        if cbar_mappable is None:
-            cbar = fig.colorbar(CS, ax=axs)
-        else:
-            cbar = fig.colorbar(cbar_mappable, ax=axs)
-            
-        cbar.ax.set_ylabel(cbar_text)
-
-        # Plot the triangulation.
-        #cs = axs.tricontourf(triang, ZZ, vmin = vmin, vmax = vmax)
-        #axs.tricontour(cs, colors='k', linewidths=1)
-        axs.set_ylabel(y_label)
-        axs.set_xlabel(x_label)
-        if title_label is not None: axs.set_title(title_label)
-
-        if all(tick_multiplicator[:2]):
-            axs.xaxis.set_major_locator(ticker.MultipleLocator(base=tick_multiplicator[0]))
-            axs.xaxis.set_minor_locator(ticker.MultipleLocator(base=tick_multiplicator[1]))
-        if all(tick_multiplicator[2:]):
-            axs.yaxis.set_major_locator(ticker.MultipleLocator(base=tick_multiplicator[2]))
-            axs.yaxis.set_minor_locator(ticker.MultipleLocator(base=tick_multiplicator[3]))
-            
-        self.save_figs(fig, filename=filename, figs_path=figs_path, 
+        if show_colorbar:
+            cbar=self._set_colorbar(axs, self.fig, CS=CS, cbar_mappable=cbar_mappable, 
+                                    cbar_text=cbar_text)        
+        self._set_labels(axs, x_label=x_label, y_label=y_label, title_label=title_label)
+        self._set_tickers(axs, tick_multiplicator=tick_multiplicator)
+        self.save_figs(self.fig, filename=filename, figs_path=figs_path, 
                         savefigure=savefigure, FigFormat=FigFormat, FigDpi=FigDpi)
-        return fig, axs
+        return self.fig, axs
+
+        def _set_figure(self, fig=None, axs=None):
+        if axs is None: 
+            self.fig, axs = plt.subplots(constrained_layout=True)
+        else:
+            self.fig = fig 
+        return self.fig, axs
