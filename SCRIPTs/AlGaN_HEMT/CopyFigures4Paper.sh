@@ -1,0 +1,82 @@
+
+FigsOriginFolder='/home/Docs5/badal.mondal/linuxhome/MyFolder/Projects/DeviceSimulation/NextnanoSimulations/FIGs/AlGaN_HEMT/AlGaN_AlGaN_AlN_HEMT/nnp/2DEG_DensityMobilityInterplay'
+FigsOriginFolderDensity="${FigsOriginFolder}/2DEHG_density/OneDim/"
+FigsOriginFolderMobility="${FigsOriginFolder}/2DEHG_mobility/OneDim/"
+FigsEndFolder="${FigsOriginFolder}/Figures_Paper/OneDim"
+mkdir -p $FigsEndFolder
+
+# Figure 1b
+cp ${FigsOriginFolderDensity}/sim/band_edges_device.eps ${FigsEndFolder}/Figure_1b.eps
+# Figure 2a
+cp ${FigsOriginFolderMobility}/Individual/Barrier_50.00_2DEG_Paper.eps ${FigsEndFolder}/Figure_2a.eps
+# Figure 2b
+cp ${FigsOriginFolderMobility}/Others/Comp_contrast_thickness_2DEG.eps ${FigsEndFolder}/Figure_2b.eps
+# Figure 2c
+cp ${FigsOriginFolderMobility}/Others/Critical_comp_contrast_2DEG.eps ${FigsEndFolder}/Figure_2c.eps
+# Figure 3
+cp ${FigsOriginFolderMobility}/Individual/Barrier_50.00_TOT_Paper.eps ${FigsEndFolder}/Figure_3.eps
+# Figure 4_legends
+cp ${FigsOriginFolderMobility}/Others/channel_comp_legends.eps ${FigsEndFolder}/Figure_4_legends.eps
+# Figure 4a
+cp ${FigsOriginFolderMobility}/Others/deg_Tb_AlN_AlGaN.eps ${FigsEndFolder}/Figure_4a.eps
+# Figure 4b
+cp ${FigsOriginFolderMobility}/Others/mu_Tb_AlN_AlGaN.eps ${FigsEndFolder}/Figure_4b.eps
+# Figure 4c
+cp ${FigsOriginFolderMobility}/Others/lfom_Tb_AlN_AlGaN.eps ${FigsEndFolder}/Figure_4c.eps
+# Figure 5a
+cp ${FigsOriginFolderMobility}/Others/AlN50AlGaN_300K_mu_FOM_paper.eps ${FigsEndFolder}/Figure_5a.eps
+# Figure 5b_legends
+cp ${FigsOriginFolderMobility}/Temperature/temperature_legends.eps ${FigsEndFolder}/Figure_5b_legends.eps
+# Figure 5b
+cp ${FigsOriginFolderMobility}/Temperature/Highest_FOM_norm_line_Tb50.eps ${FigsEndFolder}/Figure_5b.eps
+# Figure S1a
+cp ${FigsOriginFolderDensity}/sim_sweep__Temperature/2DEHG_device.eps ${FigsEndFolder}/Figure_S1a.eps
+# Figure S1b
+cp ${FigsOriginFolderDensity}/sim_sweep__SchottkyBarrierHeight/2DEHG_device.eps ${FigsEndFolder}/Figure_S1b.eps
+# Figure S2a
+cp ${FigsOriginFolderDensity}/sim_sweep__ThicknessAlNSub/sim__ThicknessAlNSub_300_/potential.eps ${FigsEndFolder}/Figure_S2a.eps
+# Figure S2b
+cp ${FigsOriginFolderDensity}/end_bc_Schottky_sweep__ThicknessAlNSub/end_bc_Schottky__ThicknessAlNSub_300_/potential.eps ${FigsEndFolder}/Figure_S2b.eps
+# Figure S3
+cp ${FigsOriginFolderDensity}/sim_sweep__ThicknessAlNSub/2DHG_compare_device.eps ${FigsEndFolder}/Figure_S3.eps
+# Figure S4a
+cp ${FigsOriginFolderDensity}/sim_sweep__ThicknessAlGaNBarrier/2DEHG_device.eps ${FigsEndFolder}/Figure_S4a.eps
+# Figure S4b
+cp ${FigsOriginFolderDensity}/sim_sweep__ThicknessAlGaNChannel/2DEHG_device.eps ${FigsEndFolder}/Figure_S4b.eps
+# Figure S5a
+cp ${FigsOriginFolderMobility}/Others/two_deg_Tb_AlN_Al0.50GaN.eps ${FigsEndFolder}/Figure_S5a.eps
+# Figure S5b
+cp ${FigsOriginFolderDensity}/Al85_C_sweep__ThicknessAlGaNBarrier/2DEG_device.eps ${FigsEndFolder}/Figure_S5b.eps
+# Figure S6a
+cp ${FigsOriginFolderMobility}/Individual/Barrier_5.00_2DEG.eps ${FigsEndFolder}/Figure_S6a.eps
+# Figure S6b
+cp ${FigsOriginFolderMobility}/Individual/Barrier_15.00_2DEG.eps ${FigsEndFolder}/Figure_S6b.eps
+# Figure S6c
+cp ${FigsOriginFolderMobility}/Individual/Barrier_30.00_2DEG.eps ${FigsEndFolder}/Figure_S6c.eps
+# Figure S6d
+cp ${FigsOriginFolderMobility}/Individual/Barrier_50.00_2DEG.eps ${FigsEndFolder}/Figure_S6d.eps
+# Figure S7a
+cp ${FigsOriginFolderMobility}/Individual/Barrier_5.00_2DHG.eps ${FigsEndFolder}/Figure_S7a.eps
+# Figure S7b
+cp ${FigsOriginFolderMobility}/Individual/Barrier_50.00_2DHG.eps ${FigsEndFolder}/Figure_S7b.eps
+# Figure S8
+cp ${FigsOriginFolderMobility}/Others/Mobility_contribs_AlN50AlGaN_300K.eps ${FigsEndFolder}/Figure_S8.eps
+# Figure S9a
+cp ${FigsOriginFolderDensity}/sim_sweep__AlContentBarrier__AlContentChannel__ThicknessAlGaNBarrier/Others/Gamma_0.eps ${FigsEndFolder}/Figure_S9a.eps
+# Figure S9b
+cp ${FigsOriginFolderDensity}/sim_sweep__AlContentBarrier__AlContentChannel__ThicknessAlGaNBarrier/Others/Gamma_1.eps ${FigsEndFolder}/Figure_S9b.eps
+# Figure S10_legends
+cp ${FigsOriginFolderMobility}/Temperature/temperature_legends.eps ${FigsEndFolder}/Figure_S10_legends.eps
+# Figure S10a
+cp ${FigsOriginFolderMobility}/Temperature/Highest_FOM_line_Tb25.eps ${FigsEndFolder}/Figure_S10a.eps
+# Figure S10b
+cp ${FigsOriginFolderMobility}/Temperature/Highest_FOM_norm_line_Tb25.eps ${FigsEndFolder}/Figure_S10b.eps
+# Figure S10c
+cp ${FigsOriginFolderMobility}/Temperature/Highest_FOM_T_comp_Tb25.eps ${FigsEndFolder}/Figure_S10c.eps
+# Figure S11_legends
+cp ${FigsOriginFolderMobility}/Temperature/temperature_legends.eps ${FigsEndFolder}/Figure_S11_legends.eps
+# Figure S11
+cp ${FigsOriginFolderMobility}/Temperature/Highest_FOM_line_Tb50.eps ${FigsEndFolder}/Figure_S11.eps
+# Figure S12
+cp ${FigsOriginFolderMobility}/Temperature/Highest_FOM_T_comp_Tb50.eps ${FigsEndFolder}/Figure_S12.eps
+

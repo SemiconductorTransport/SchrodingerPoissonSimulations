@@ -5,7 +5,7 @@
 
 # ## 1. General settings
 
-# In[1]:
+# In[41]:
 
 
 submit_cluster = 0 # Submit the job to the cluster or not.
@@ -13,7 +13,7 @@ submit_cluster = 0 # Submit the job to the cluster or not.
 
 # ### 1.1 Import modules
 
-# In[2]:
+# In[42]:
 
 
 if not submit_cluster:
@@ -23,7 +23,7 @@ if not submit_cluster:
 
 # ### 1.1.1 Adding local module path to python module search path
 
-# In[3]:
+# In[43]:
 
 
 from pathlib import Path
@@ -35,7 +35,7 @@ sys.path.append(module_path)
 
 # #### 1.1.2 Import global modules
 
-# In[4]:
+# In[44]:
 
 
 import shutil
@@ -54,7 +54,7 @@ from matplotlib.widgets import Slider
 
 # #### 1.1.2 Import local defined modules
 
-# In[5]:
+# In[45]:
 
 
 from src.PlotFunctions import general_plot_functions, Plot1DFuns, PlotQuasi3DFuns
@@ -65,7 +65,7 @@ lpltq3d = PlotQuasi3DFuns()
 
 # ### 1.2 Matplotlib settings
 
-# In[6]:
+# In[46]:
 
 
 params = {'figure.figsize': (8, 6), 'legend.fontsize': 18, 'axes.labelsize': 24, 'axes.titlesize': 24,
@@ -78,7 +78,7 @@ plt.rc('font', size=24)
 
 # ### 1.3 nextnanopy settings
 
-# In[7]:
+# In[47]:
 
 
 #%% ===========================================================================
@@ -111,7 +111,7 @@ print(f'-nextnano config: {nn.config}')
 
 # ### 1.4 Set tasks to perform
 
-# In[108]:
+# In[48]:
 
 
 run_sim = 0 # run single simulations
@@ -127,7 +127,7 @@ savefigure = True # save the figures generated
 
 # ### 1.5 Input and output directories/files
 
-# In[119]:
+# In[49]:
 
 
 #++++++++++++++++++++++++++++++++++++++++++++++
@@ -216,7 +216,7 @@ color_map = 'viridis'
 
 # ### 1.5 Sweep parameters
 
-# In[ ]:
+# In[50]:
 
 
 # Specify sweep variables:
@@ -250,36 +250,10 @@ SweepVariablesSet = {
                      'AlContentChannel'         : np.linspace( 0.5,   1.0, num=11),
                      'ThicknessAlGaNBarrier'    : np.linspace( 5.0,  50.0, num=10)
                      }
-    # #-------------------- Project: InterfaceCompGradEffect_on_2DEGdensity ------------
-    # 'CompositionGradLengthScan2DEG' : 
-    #                 {'CompositionGradLength2DEG': np.linspace( 0.0,  25.0, num=6)},
-    # 'FixBarrierCompositionGradLengthScan2DEG' : 
-    #                 {'CompositionGradLength2DEG': np.linspace( 0.0,  25.0, num=6)},
-    # 'CompositionGradLengthScan2DHG' : 
-    #                 {'CompositionGradLength2DHG': np.linspace(50.0,  200.0, num=4)},
-    # 'IntentionalDopingConcScanSC' : 
-    #             {'IntentionalDopingSCConcentration': [1.0e18, 5.0e18, 1.0e19, 5.0e19, 1.0e20, 2.0e20, 
-    #                                                   5.0e20, 1.0e21, 5.0e21, 1.0e22, 5.0e22, 1.0e23]},
-    # 'IntentionalDopingConcScanBCB' : 
-    #                 {'IntentionalDopingBCConcentration': [1.0e18, 5.0e18, 1.0e19, 5.0e19, 1.0e20, 2.0e20, 5.0e20, 
-    #                                                       1.0e21, 5.0e21, 1.0e22, 5.0e22, 1.0e23]},
-    # 'IntentionalDopingConcScanBCC' : 
-    #                 {'IntentionalDopingBCConcentration': [1.0e18, 5.0e18, 1.0e19, 5.0e19, 1.0e20, 2.0e20, 5.0e20, 
-    #                                                       1.0e21, 5.0e21, 1.0e22, 5.0e22, 1.0e23]}  
 }
-# SweepVariablesSet = { 
-#     'CompositionBThicknessScan' : 
-#                     {'AlContentBarrier'         : np.linspace( 0.5,   1.0, num=11), 
-#                      'AlContentChannel'         : np.linspace( 0.5,   1.0, num=11),
-#                      'ThicknessAlGaNBarrier'    : np.linspace( 5.0,  50.0, num=10)
-#                      }
-# }
 
 # For specific samples only sweep channel thickness and composition gradient
 SpecificSamplesCase = ['BarrierThicknessScan', 'ChannelThicknessScan','TemperatureScan']
-                      #  'IntentionalDopingConcScanSC','IntentionalDopingConcScanBCB', 'IntentionalDopingConcScanBCC',
-                      #  'CompositionGradLengthScan2DEG'
-                      # ]
 
 # Note: negative IntentionalDopingBCLength means doping in Barrier, positive means in Channel
 # SwitchKeyVal: for IntentionalDopingConcScan is length of doping region in nm
@@ -293,24 +267,8 @@ TemporaryInputFiles4 = {'SchottkyBarrierEndDevice': {'SwitchKey': ['end_device_a
                                                          'input_file_name': 'GaN_C'},
                        'Al85Const2DEGReverseEng'      : {'SwitchKey': ['AlContentBarrier','AlContentChannel'], 
                                                          'SwitchKeyVal': [1.0, 0.85],
-                                                         'input_file_name': 'Al85_C'},
-                       'FixBarrierCompositionGradLengthScan2DEG': {'SwitchKey': ['EffectiveBarrier'], 
-                                                                    'SwitchKeyVal': [0],
-                                                                    'input_file_name': 'fix_barrier'}, 
-                       #  'IntentionalDopingConcScanSC': {'SwitchKey': ['IntentionalDopingSCLength'], 
-                       #                                  'SwitchKeyVal': [1],
-                       #                                  'input_file_name': 'idoping'},
-                       #  'IntentionalDopingConcScanBCB': {'SwitchKey': ['IntentionalDopingBCLength'], 
-                       #                                   'SwitchKeyVal': [-1],
-                       #                                   'input_file_name': 'idoping_B'},
-                       #  'IntentionalDopingConcScanBCC': {'SwitchKey': ['IntentionalDopingBCLength'], 
-                       #                                   'SwitchKeyVal': [1],
-                       #                                   'input_file_name': 'idoping_C'}
+                                                         'input_file_name': 'Al85_C'}
                        }
-
-
-# In[1]:
-
 
 # Here we create mapping between the long data sheet name to short one.
 # Windows system can not handle sheet name > 31 charachters
@@ -332,7 +290,7 @@ MappingShortDataSheetName = {
                               'description': 'Temperature variation simulations for Al75Ga25N(25nm)/GaN(300nm)/GaN'
                              },
                              'sim_sweep__Temperature':
-                            {'abbr':'T_scan', 
+                             {'abbr':'T_scan', 
                               'description': 'Temperature variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)'
                              },
                             'Al85_C_sweep__ThicknessAlGaNBarrier': 
@@ -362,34 +320,42 @@ MappingShortDataSheetName = {
                             }
 # Creating helper.txt of this mapping in the DATAs folder
 with open(os.path.join(folder_post_data_,'helper.txt'),'w') as helper_file:
+    header_txt = f'''Simulation Software: Nextnano++(v1.21.24 RHEL compilation)
+Simulation setup: 1D Schrodinger-Poisson, Cation-face growth direction
+Sample: AlGaN/AlGaN/AlN HEMT
+\n
+'''
     
     sheet_column_name = f''' 
+### {'='*72}
 # Sheet column name: description
 ### {'='*72}
 0th column    : Row indices
 1st column(s) : The parameter(s) varied in simulations
-2DEG_device   : Intergrated 2D electron gas density over whole device
-2DEG_BC       : Intergrated 2D electron gas density around the barrier-channel interface (within quantum region)
-2DEG_SC       : Intergrated 2D electron gas density around the Substrate/Buffer-channel interface (within quantum region)
-2DHG_device   : Intergrated 2D hole gas density over whole device
-2DHG_BC       : Intergrated 2D hole gas density around the barrier-channel interface (within quantum region)
-2DHG_SC       : Intergrated 2D hole gas density around the Substrate/Buffer-channel interface (within quantum region)
-### {'='*72}
+2DEG_device   : Intergrated 2D electron gas density over whole device (in carriers/cm^2)
+2DEG_BC       : Intergrated 2D electron gas density around the barrier-channel interface (within quantum region) (in carriers/cm^2)
+2DEG_SC       : Intergrated 2D electron gas density around the Substrate/Buffer-channel interface (within quantum region) (in carriers/cm^2)
+2DHG_device   : Intergrated 2D hole gas density over whole device (in carriers/cm^2)
+2DHG_BC       : Intergrated 2D hole gas density around the barrier-channel interface (within quantum region) (in carriers/cm^2)
+2DHG_SC       : Intergrated 2D hole gas density around the Substrate/Buffer-channel interface (within quantum region) (in carriers/cm^2)
+\n### {'='*72}
 '''
+    helper_file.write(header_txt)
+    helper_file.write(f"### {'='*72}\n")
     helper_file.write('# Sheet name: description\n')
     helper_file.write(f"### {'='*72}")
     
     for sim_name_full in MappingShortDataSheetName:
         save_text = f"""
-{MappingShortDataSheetName[sim_name_full]['abbr']} : {MappingShortDataSheetName[sim_name_full]['description']}
+{MappingShortDataSheetName[sim_name_full]['abbr']:<31} : {MappingShortDataSheetName[sim_name_full]['description']}
 """
         helper_file.write(save_text)
-    helper_file.write(f"### {'='*72}\n")
+    helper_file.write(f"\n")
     helper_file.write(sheet_column_name)
     
 
 
-# In[ ]:
+# In[51]:
 
 
 ##=============================================================================
@@ -425,7 +391,7 @@ def create_tmp_input_file_4_sweep(ScanVariableName, base_input_path, mapps_, Fil
 
 # ## 2. Perform simulations
 
-# In[121]:
+# In[52]:
 
 
 for input_path in input_files_dest:
@@ -477,14 +443,14 @@ for input_path in input_files_dest:
 
 # ## 3. Create post-processed data sheet from sweep simulations
 
-# In[122]:
+# In[53]:
 
 
 what_to_plots = ['2DEG', '2DHG']
 plot_data_files = ['integrated_density_electron.dat', 'integrated_density_hole.dat']
 
 
-# In[123]:
+# In[ ]:
 
 
 if create_data_sweep:
@@ -564,11 +530,11 @@ if create_data_sweep:
                 
 
 
-# ## 3. Plottings
+# ## 4. Plottings
 
-# ### 3.1 Plot band diagram from single simulation results (** Require original simulation results)
+# ### 4.1 Plot band diagram from single simulation results (** Require original simulation results)
 
-# In[124]:
+# In[54]:
 
 
 # Define the region of band digram you want to zoom in
@@ -579,12 +545,9 @@ zoom_band_diagram_regions = [[['EndAlGaNBarrier', 10], ['Gamma_', 'electron_Ferm
                              [['EndAlGaNChannel', 10], ['HH_', 'LH_', 'SO_', 'electron_Fermi_level_'], [-1, 0.4]]]
 
 
-# In[125]:
+# In[182]:
 
 
-#%matplotlib inline 
-#%matplotlib ipympl
-# savefigure=True
 if do_plot:
     for input_path in input_files_dest:
         print(f"{'*'*72}")
@@ -628,13 +591,9 @@ if do_plot:
             i+=1
 
 
-# In[126]:
+# In[184]:
 
 
-#%matplotlib inline 
-#%matplotlib ipympl
-# do_plot = True
-# savefigure=False
 if do_plot:
     for input_path in input_files_dest:
         print(f"{'*'*72}")
@@ -649,8 +608,7 @@ if do_plot:
         kindex = 0
         plot_band_indices = {1:'tab:red',2:'tab:blue',3:'cyan'} #band_index, color 
         band_plot = {'Gamma_': 'quantum_2DEG_Gamma', 
-                     'HH_': 'quantum_2DHG_HH' #'quantum_2DHG_kp6'
-                     }
+                     'HH_': 'quantum_2DHG_kp6'} #'quantum_2DHG_HH'}
         for zoom_region in zoom_band_diagram_regions:
             i = 0
             for band_index, color_ in plot_band_indices.items():
@@ -670,11 +628,12 @@ if do_plot:
                                             show_twin_yaxis_labels=True)
                 i += 1
                     
-            lpltgen.save_figs(fig, filename=f'Psi_sqr_{band_plot[zoom_region[1][0]]}', figs_path=output_figs, savefigure=savefigure,
+            lpltgen.save_figs(fig, filename=f'Psi_sqr_{band_plot[zoom_region[1][0]]}', 
+                              figs_path=output_figs, savefigure=savefigure,
                               FigFormat=FigFormat, FigDpi=FigDpi)
 
 
-# In[127]:
+# In[ ]:
 
 
 if do_plot:
@@ -710,9 +669,9 @@ if do_plot:
                                 plot_density=True, plot_device_sketch=True, show_twin_yaxis_labels=True)
 
 
-# ### 3.2 Plot band diagram from sweep results (** Require original simulation results)
+# ### 4.2 Plot band diagram from sweep results (** Require original simulation results)
 
-# In[52]:
+# In[ ]:
 
 
 if do_plot_sweep:
@@ -781,35 +740,19 @@ if do_plot_sweep:
                                                 plot_density=True, plot_density_on_left_axis=True,
                                                 plot_device_sketch=False, right_yaxis_shift=None,
                                                 show_twin_yaxis_labels=True)
-                    #==========================================================================
-                    if 'IntentionalDopingConcScan' in ScanVariableName:
-                        # Plot band edges zoomed in the 2DEG and 2DHG regions
-                        i = 0
-                        for zoom_region in zoom_band_diagram_regions:
-                            density_list=[('Electron_density', 'r'), ('Hole_density', 'b')]
-                            if i == 0: density_list=density_list[-1::-1]
-                            lplt1d.PlotBandDiagrams(data_folder_sweep, figs_path=output_figs_sweep, software_=software_, 
-                                                    filename=f'band_edges_zoom_r{i}', savefigure=savefigure,
-                                                    FigDpi=FigDpi, FigFormat=FigFormat,xaxis_n_locator=None,
-                                                    x_zoom_region=zoom_region[0], plot_bands=zoom_region[1],
-                                                    x_zoom_2nd_no_shift=True, right_yaxis_shift=zoom_region[2][0],
-                                                    y_left_major_locator_distance=zoom_region[2][1],
-                                                    density_list=density_list, plot_density=True, 
-                                                    show_twin_yaxis_labels=True)
-                            i+=1
 
 
-# #### 3.2.1 Set folder path for Sweep simulations run (** Require only post-processed data file)
+# #### 4.2.1 Set folder path for Sweep simulations run (** Require only post-processed data file)
 
-# ##### 3.2.1.1 Set mapping of x-axis labels and x-ticks locator for different sweep plots
+# ##### 4.2.1.1 Set mapping of x-axis labels and x-ticks locator for different sweep plots
 
-# In[128]:
+# In[55]:
 
 
 rescale_2deg_fact = 1e13  # Rescalings 2DEG in 10^13 unit
 
 
-# In[130]:
+# In[56]:
 
 
 ## Map of some variables Sweep variables for plotting
@@ -830,12 +773,6 @@ mappp_ = {'SchottkyBarrierHeight':{'x_label_text': 'Schottky barrier height (eV)
           'ThicknessAlGaNBarrier':{'x_label_text': r'Barrier thickness, L$_\mathrm{B}$ (nm)', 
                                    'ticks_multiplicator_plot1': [50, 25, None, None],
                                    'ticks_multiplicator_plot2': [50, 25, None, None]},
-          'CompositionGradLength2DEG':{'x_label_text': 'Composition gradient length, $\\gamma$ (nm)', 
-                                   'ticks_multiplicator_plot1': [5, 2.5, None, None],
-                                   'ticks_multiplicator_plot2': [5, 2.5, None, None]},
-          'CompositionGradLength2DHG':{'x_label_text': 'Composition gradient length, $\\gamma$ (nm)', 
-                                   'ticks_multiplicator_plot1': [50, 25, None, None],
-                                   'ticks_multiplicator_plot2': [50, 25, None, None]},
           'Temperature':{'x_label_text': 'Temperature (K)', 
                                    'ticks_multiplicator_plot1': [100, 50, None, None],
                                    'ticks_multiplicator_plot2': [100, 50, None, None]},
@@ -844,18 +781,13 @@ mappp_ = {'SchottkyBarrierHeight':{'x_label_text': 'Schottky barrier height (eV)
                                    'ticks_multiplicator_plot2': [0.2, 0.1, 0.1, 0.05]},
          'AlGaNpyroelectricBowing':{'x_label_text': 'Pyroelectric bowing', 
                                    'ticks_multiplicator_plot1': [0.1, 0.1, 0.2, 0.1],
-                                   'ticks_multiplicator_plot2': [0.1, 0.1, 0.5, 0.25]},
-         'IntentionalDopingSCConcentration': {'x_label_text': 'Doping concentration ($\\mathrm{cm}^{-3}$)', 
-                                   'ticks_multiplicator_plot1': [None, None, 1, 0.5],
-                                   'ticks_multiplicator_plot2': [None, None, 1, 0.5]},
-         'IntentionalDopingBCConcentration': {'x_label_text': 'Doping concentration ($\\mathrm{cm}^{-3}$)', 
-                                   'ticks_multiplicator_plot1': [None, None, 0.5, 0.25],
-                                   'ticks_multiplicator_plot2': [None, None, 0.5, 0.25]}}
+                                   'ticks_multiplicator_plot2': [0.1, 0.1, 0.5, 0.25]}
+         }
 
 
-# ##### 3.2.1.2 Plot 1D sweep variables vs property (e.g. 2DEG density)
+# ##### 4.2.1.2 Plot 1D sweep variables vs property (e.g. 2DEG density)
 
-# In[131]:
+# In[ ]:
 
 
 if do_plot_sweep:
@@ -883,7 +815,7 @@ if do_plot_sweep:
                 data_sheet_name_map = f'{tmp_txt}_sweep__{SweepVariablesFolder}'
             else:
                 data_sheet_name_map =  f'{input_file_name_variable}_sweep__{SweepVariablesFolder}'
-            data_sheet_name = MappingShortDataSheetName[data_sheet_name_map]['abbr']
+            data_sheet_name = MappingShortDataSheetName[data_sheet_name_map]['abbr']  
             print(f'- Reading data sheet: {data_sheet_name}')
             #=============================================================================================
             # Set figures directory
@@ -898,19 +830,10 @@ if do_plot_sweep:
             ticks_multiplicator_plot1 = mappp_.get(SweepVariablesKeys[0])['ticks_multiplicator_plot1']
             ticks_multiplicator_plot2 = mappp_.get(SweepVariablesKeys[0])['ticks_multiplicator_plot2']
             #=============================================================================================
-            # SC: Substrate-channel 2DHG QW region
-            # BC: Barrier-channel 2DEG WQ region
             # device: whole region
-            if ScanVariableName in ['IntentionalDopingConcScanSC', 
-                                    'IntentionalDopingConcScanBCB', 
-                                    'IntentionalDopingConcScanBCC']: 
-                which_regions_to_plot = ['SC', 'BC', 'device'] 
-                x_log_scale = True
-                fname_save_fig_extra = ''
-            else:
-                which_regions_to_plot = ['device'] 
-                x_log_scale = False
-                fname_save_fig_extra = ''
+            which_regions_to_plot = ['device'] 
+            x_log_scale = False
+            fname_save_fig_extra = ''
             #=============================================================================================
             XX = df[SweepVariablesKeys[0]]
             for JJJ in which_regions_to_plot:
@@ -947,7 +870,7 @@ if do_plot_sweep:
                 #=============================================================================================
 
 
-# In[132]:
+# In[ ]:
 
 
 if do_plot_sweep:
@@ -1019,9 +942,9 @@ if do_plot_sweep:
             ii += 1
 
 
-# ##### 3.2.1.3 Plot 3D sweep variables vs property (e.g. 2DEG density)
+# ##### 4.2.1.3 Plot 3D sweep variables vs property (e.g. 2DEG density)
 
-# In[133]:
+# In[ ]:
 
 
 if do_plot_sweep:
@@ -1119,7 +1042,7 @@ if do_plot_sweep:
                                       savefigure=savefigure)
 
 
-# In[134]:
+# In[ ]:
 
 
 if do_plot_sweep:
@@ -1188,9 +1111,9 @@ if do_plot_sweep:
                                                   savefigure=savefigure)
 
 
-# ##### 4.2.1.4 Plot 2DEG distributions for selected sweep samples (* require original simulation)
+# ##### 4.2.1.4 Plot 2DEG distributions for selected sweep samples (* require original simulation)¶
 
-# In[135]:
+# In[176]:
 
 
 fname_lists = [['sim__AlContentBarrier_1.0_AlContentChannel_0.5_ThicknessAlGaNBarrier_50.0_',
@@ -1205,7 +1128,7 @@ zoom_band_diagram_regions = [[['EndAlGaNBarrier', 10], ['Gamma_', 'electron_Ferm
                              [['EndAlGaNChannel', 10], ['HH_', 'LH_', 'SO_', 'electron_Fermi_level_'], [-160, 0.4]]]
 
 
-# In[136]:
+# In[181]:
 
 
 if do_plot_sweep:
@@ -1265,80 +1188,12 @@ if do_plot_sweep:
                             ttt = sweep_folder_path_.split('_')
                             legend_txtx.append(f'AlN({ttt[-2]})/Al$_{{{float(ttt[5]):.2}}}$Ga$_{{{1.0-float(ttt[5]):.2}}}$N') 
                         ax.set_ylim(ymax=1, ymin=-0.8)
-                        #ax2.set_yticks([0,50,100,150,200])
-                        #ax2.set_yticklabels([0,50,100,150,200])
+                        ax2.set_yticks([0,50,100,150,200])
+                        ax2.set_yticklabels([0,50,100,150,200])
                         ax.axhline(y=0,c='gray')
                         #ax.legend(legend_txtx)
                         lpltgen.save_figs(fig, filename=f'{zoom_region[1][0]}{kk}', figs_path=output_figs_sweep, 
                                           savefigure=savefigure, FigFormat=FigFormat4Paper, FigDpi=FigDpi)
-
-
-# In[137]:
-
-
-fname_lists = ['sim_sweep__CompositionGradLength2DEG/sim__CompositionGradLength2DEG_0.0_',
-              'sim_sweep__CompositionGradLength2DEG/sim__CompositionGradLength2DEG_25.0_',
-              'fix_barrier_sweep__CompositionGradLength2DEG/fix_barrier__CompositionGradLength2DEG_25.0_']
-clsp = ['r', 'c', 'm', 'g', 'y']
-
-
-# In[138]:
-
-
-if do_plot_sweep:
-    for input_path in input_files_dest:
-            print(f"{'*'*72}")
-            input_filename = input_path.split('/')[-1]
-            input_file_name_variable = input_filename.replace(FileExtension, '')
-            ScanVariableNamesList = ['CompositionGradLengthScan2DEG']
-            for ScanVariableName in ScanVariableNamesList:
-                if ScanVariableName not in SweepVariablesSet: continue
-                SweepVariables = SweepVariablesSet[ScanVariableName]
-                if 'specific_sample_' in input_filename and ScanVariableName not in SpecificSamplesCase:
-                    continue
-                #***************************************************************************
-                # Set the output folder path
-                SweepVariablesKeys = list(SweepVariables.keys())
-                SweepVariablesFolder ='__'.join(SweepVariablesKeys)
-                output_figs_sweep = f'{folder_output_}/Others'.replace('OUTPUTs','FIGs')
-                if upgrade_figs_folder: output_figs_sweep = output_figs_sweep.replace(replace_figs_path[0], replace_figs_path[1])
-                mkdir_if_not_exist(output_figs_sweep)
-                print(f'- Figs directory: {output_figs_sweep}')
-                for jkl in range(len(fname_lists)):
-                    print('')
-                    for i, sweep_folder_path_ in enumerate(fname_lists[:jkl+1]):
-                        data_folder_sweep =nn.DataFolder(os.path.join(folder_output_, sweep_folder_path_))
-                        tmp_data_f_check = data_folder_sweep.fullpath
-                        print(f'- Data folder/Plotting: {tmp_data_f_check}')
-                        scale_x_axis_ = 25 if 'fix_barrier' in tmp_data_f_check else None # re-scale x-axis by nm
-                        bandedge_characterstics = {'Gamma_':('Gamma', clsp[i]),
-                                    'HH_':('heavy hole', 'y'),
-                                    'LH_':('light hole', 'tab:blue'),
-                                    'SO_':('crystal-field hole', 'g'),
-                                    'electron_Fermi_level_':('Fermi level', 'gray')
-                                    }
-                        density_list=[('Electron_density', clsp[i])]
-                        if i == 0: 
-                            fig=None; ax=None; ax0=None; ax2=None
-                        fig, ax, ax0, ax2 =\
-                        lplt1d.PlotBandDiagrams(data_folder_sweep, fig=fig, ax=ax, ax0=ax0, ax2=ax2,
-                                                figs_path=output_figs_sweep, software_=software_, 
-                                                savefigure=False,bands_characters=bandedge_characterstics,
-                                                band_edge_ls='--', scale_x_axis = scale_x_axis_,
-                                                FigDpi=FigDpi, FigFormat=FigFormat4Paper,xaxis_n_locator=5,
-                                                x_zoom_region=[10,60],#['EndAlGaNBarrier', 60], 
-                                                plot_bands=['Gamma_'],
-                                                x_zoom_2nd_no_shift=True, 
-                                                right_yaxis_shift= -7.2,
-                                                y_left_major_locator_distance=1,
-                                                density_list=density_list, plot_density=True, 
-                                                show_twin_yaxis_labels=0, align_left_right_yaxis=False)
-                        i+=1 
-                        ax.set_ylim(ymax=3.6, ymin=-0.4)
-                        ax.set_xlim(xmin=-20)
-                        ax.axhline(y=0,c='gray')
-                        lpltgen.save_figs(fig, filename=f'{zoom_region[1][0]}_{jkl}', figs_path=output_figs_sweep, 
-                                          savefigure=savefigure, FigFormat=FigFormat, FigDpi=FigDpi)
 
 
 # In[ ]:

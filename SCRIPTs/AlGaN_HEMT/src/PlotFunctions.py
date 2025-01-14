@@ -56,7 +56,7 @@ class general_plot_functions:
         # upper and lower limits
         lowers = extrema[:, 0]
         uppers = extrema[:, 1]
-        print(lowers, uppers)
+        #print(lowers, uppers)
         # if all pos or all neg, don't scale
         all_positive = False
         all_negative = False
@@ -143,15 +143,18 @@ class Plot1DFuns(general_plot_functions):
 
     def _plot_band_edges(self, ax, df_band_edge, xlabel:str="Distance", 
                          ylabel:str='Energy', xaxis_n_locator:int=6,
-                         y_major_locator_distance:int=2,
+                         scale_x_axis:float = None,
+                         y_major_locator_distance:float=2,
                          x_zoom_region:list=[None, None],
                          plot_bands:list=['Gamma_','HH_','LH_','SO_',
                                           'electron_Fermi_level_'],
-                         bands_characters:dict = None):
+                         bands_characters:dict = None, band_edge_ls='-'):
         if plot_bands is None or len(plot_bands) < 1:
             print('Skipping band edge plot. Nothing to plot.')
             return ax
         XX = df_band_edge.coords['x'].value
+        if scale_x_axis:
+            XX -= scale_x_axis
         xunit = f"{df_band_edge.coords['x'].unit}"
         yunit = f"{df_band_edge.variables['Gamma_'].unit}" # eV
 
@@ -164,7 +167,7 @@ class Plot1DFuns(general_plot_functions):
         for band_plot in plot_bands:
             YY = df_band_edge.variables[band_plot].value
             YY_ = YY[pos_[0]:pos_[1]]
-            ax.plot(XX[pos_[0]:pos_[1]], YY_, 
+            ax.plot(XX[pos_[0]:pos_[1]], YY_, linestyle=band_edge_ls,
                     label=bands_characters.get(band_plot)[0],
                     color=bands_characters.get(band_plot)[1])
         #======================================================================
@@ -189,14 +192,17 @@ class Plot1DFuns(general_plot_functions):
         return ax
         
     def _plot_density_plots(self, ax2, density_list, ax2_unit:str=None,
-                            label_size=18, 
+                            label_size=18, scale_x_axis:float=None,
                             y_label:str='Carrier concentration', line_alpha=1.0,
                             show_twin_yaxis_labels:bool=False, set_ymin:float=None):
         if ax2_unit is None:
             ax2_unit = '10$^{{18}}$ cm$^{{-3}}$' #f'{df_e_density.variables['Electron_density'].unit}' # 10$^{{18}}$ cm$^{{-3}}$
         #======================================================================
         for key, color_, val in density_list:
-            ax2.plot(val.coords['x'].value, val.variables[key].value , color=color_, alpha=line_alpha)
+            x_vals_plt = val.coords['x'].value
+            if scale_x_axis:
+                x_vals_plt -= scale_x_axis
+            ax2.plot(x_vals_plt, val.variables[key].value , color=color_, alpha=line_alpha)
         #======================================================================
         if show_twin_yaxis_labels:
             if y_label and label_size: 
@@ -210,10 +216,11 @@ class Plot1DFuns(general_plot_functions):
     
     def _plot_device_sketch(self, ax0, df_input_variables, df_composition, 
                             show_doping:bool=False, show_Qregion:bool=False,
-                            device_cmap='ocean'):
+                            device_cmap='ocean',scale_x_axis:float=None):
         #======================================================================
         # Create the 2D grid for pcolormesh
         XX = df_composition.coords['x'].value
+        if scale_x_axis: XX -= scale_x_axis
         X_grid, Y_grid = np.meshgrid(XX, [0, 1])
         # Create the 2D Z grid for pcolormesh
         ZZ = df_composition.variables['Alloy_x_'].value
@@ -249,7 +256,8 @@ class Plot1DFuns(general_plot_functions):
                          show_doping:bool=False, show_Qregion:bool=False, line_alpha=1.0,
                          xlabel:str="Distance", ylabel:str='Energy', ylabel_twin:str='Carrier concentration',
                          figs_path='.', FigDpi:int=300, filename:str='test', device_cmap='ocean',
-                         xaxis_n_locator:int=6, y_left_major_locator_distance:int=2,
+                         xaxis_n_locator:int=6, y_left_major_locator_distance:float=2,
+                         scale_x_axis:float = None, 
                          savefigure:bool=False, software_='nextnano++',
                          FigFormat:str='.png', plot_device_sketch:bool=False,
                          density_list=[('Electron_density', 'r'), ('Hole_density', 'b')],
@@ -258,7 +266,8 @@ class Plot1DFuns(general_plot_functions):
                          show_twin_yaxis_labels:bool=False, twin_yaxis_unit:str=None,
                          right_yaxis_shift:float=-1, show_legend:bool=False,
                          x_zoom_region:list=[None, None], x_zoom_2nd_no_shift:bool=False,
-                         bands_characters:dict = None, plot_density_on_left_axis:bool=False,
+                         bands_characters:dict = None, band_edge_ls='-', 
+                         plot_density_on_left_axis:bool=False,
                          plot_bands:list=['Gamma_','HH_','LH_','SO_', 'electron_Fermi_level_'], 
                          align_left_right_yaxis:bool=False):
         # default is band edges only. extra plots will be drawn on the twin axis
@@ -293,12 +302,15 @@ class Plot1DFuns(general_plot_functions):
                 x_zoom = [x_zoom[0]-x_zoom[1], x_zoom[0]+x_zoom[1]]
         else:
             x_zoom = x_zoom_region[:]
+        if scale_x_axis: 
+                x_zoom = [x_zoom_-scale_x_axis for x_zoom_ in x_zoom]
         
         ax = self._plot_band_edges(ax, df_band_edge, xlabel=xlabel, ylabel=ylabel, 
-                                   xaxis_n_locator=xaxis_n_locator, 
+                                   xaxis_n_locator=xaxis_n_locator, scale_x_axis=scale_x_axis, 
                                    y_major_locator_distance=y_left_major_locator_distance,
                                    x_zoom_region=x_zoom, plot_bands=plot_bands,
-                                   bands_characters=bands_characters)
+                                   bands_characters=bands_characters,
+                                   band_edge_ls=band_edge_ls)
         
         # *********************************************************************
         ##### Plot electron and hole density
@@ -318,11 +330,16 @@ class Plot1DFuns(general_plot_functions):
                 elif ddensity_details[0] == 'PsiSqare':
                     assert band_file is not None, 'Provide the which band file to plot.'
                     psi_sqr_data_folder = quantum_data_folder.go_to(band_file, f'kIndex_{kindex:05d}')
-                    density_file = psi_sqr_data_folder.file(f'probability_shift_{band_file}_{band_index:04d}.dat')
+                    if 'kp' in band_file:
+                        tf_name = f'probability_shift_{band_file}_{kindex:05d}_{band_index:04d}.dat'
+                    else:
+                        tf_name = f'probability_shift_{band_file}_{band_index:04d}.dat'
+                    density_file = psi_sqr_data_folder.file(tf_name)
                     col_name = [f'Psi^2_{band_index}_']
                     if subband_energy_level: col_name.append(f'E_{band_index}_')
                 elif ddensity_details[0] == 'Polarization_density':
-                    density_file = strain_folder.file('density_polarization_charge.dat')
+                    #density_file = strain_folder.file('density_polarization_charge.dat')
+                    density_file = strain_folder.file('polarization_charge_density_total.dat')
                     col_name = ['Density']
                 elif  ddensity_details[0] == 'Pizoelectric_density':
                     density_file = strain_folder.file('density_piezoelectric_charge.dat')
@@ -339,12 +356,14 @@ class Plot1DFuns(general_plot_functions):
             #==================================================================
             if plot_density_on_left_axis:
                 ax = self._plot_density_plots(ax, density_list=new_density_list,
+                                              scale_x_axis=scale_x_axis, 
                                               y_label=ylabel_twin, set_ymin=right_yaxis_shift,
                                               show_twin_yaxis_labels=show_twin_yaxis_labels,
                                               ax2_unit=twin_yaxis_unit, line_alpha=line_alpha)
             else:
-                ax2 = ax.twinx() 
+                if ax2 is None: ax2 = ax.twinx() 
                 ax2 = self._plot_density_plots(ax2, density_list=new_density_list,line_alpha=line_alpha,
+                                               scale_x_axis=scale_x_axis, 
                                                y_label=ylabel_twin, set_ymin=right_yaxis_shift,
                                                show_twin_yaxis_labels=show_twin_yaxis_labels)
                 
@@ -362,7 +381,8 @@ class Plot1DFuns(general_plot_functions):
             df_input_variables = nn.DataFile(input_variables_file, product=software_)
             df_composition = nn.DataFile(composition_file, product=software_)
             #==================================================================
-            ax0 = self._plot_device_sketch(ax0, df_input_variables, df_composition, device_cmap=device_cmap,
+            ax0 = self._plot_device_sketch(ax0, df_input_variables, df_composition, 
+                                           scale_x_axis=scale_x_axis, device_cmap=device_cmap,
                                            show_doping=show_doping, show_Qregion=show_Qregion)
             #==================================================================
         
@@ -379,7 +399,7 @@ class Plot1DFuns(general_plot_functions):
                        figs_path='.', filename:str='test', savefigure:bool=False):
         if fig is None and ax is None:
             fig, ax = plt.subplots(1, constrained_layout=True)
-        ax.plot(XX, YY, ls=line_style, marker=marker, color=color)
+        ax.plot(XX, YY, ls=line_style, marker=marker, color=color, ms=12)
         self._set_labels(ax, x_label=x_label, y_label=y_label, title_label=title_label)
         self._set_tickers(ax, tick_multiplicator=tick_multiplicator)
 
@@ -431,7 +451,7 @@ class PlotQuasi3DFuns(general_plot_functions):
                     FigDpi:int=75, FigFormat='.png', figs_path='.', 
                     vmin=None, vmax=None, cbar_mappable=None, norm=None,
                     color_map='viridis', show_contour_lines:bool=False, 
-                    cbar_text:str=None,
+                    cbar_text:str=None,show_colorbar:bool=False,
                     filename:str='test', savefigure:bool=False):
 
         self.fig, axs = self._set_figure(fig=fig, axs=axs)
@@ -449,7 +469,7 @@ class PlotQuasi3DFuns(general_plot_functions):
                         savefigure=savefigure, FigFormat=FigFormat, FigDpi=FigDpi)
         return self.fig, axs
 
-        def _set_figure(self, fig=None, axs=None):
+    def _set_figure(self, fig=None, axs=None):
         if axs is None: 
             self.fig, axs = plt.subplots(constrained_layout=True)
         else:

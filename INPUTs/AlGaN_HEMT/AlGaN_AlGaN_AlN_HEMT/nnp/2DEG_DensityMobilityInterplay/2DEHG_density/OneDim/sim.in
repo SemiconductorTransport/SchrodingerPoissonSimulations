@@ -79,7 +79,7 @@ $CompositionGradLength2DHG  =  0.0      # thickness of Polarization Doping chann
 # Layer thicknesses
 #---------------------------------------------------------------------------------------------------
 $ThicknessContact         =  10.0    # thickness of Contact region                     (DisplayUnit:nm)(HighlightInUserInterface)
-$ThicknessAlGaNBarrier    =  30.0    # thickness of AlGaN barrier    (ListOfValues:...)(DisplayUnit:nm)(HighlightInUserInterface)
+$ThicknessAlGaNBarrier    =  25.0    # thickness of AlGaN barrier    (ListOfValues:...)(DisplayUnit:nm)(HighlightInUserInterface)
 $ThicknessAlGaNChannel    = 300.0    # thickness of AlGaN channel    (ListOfValues:...)(DisplayUnit:nm)(HighlightInUserInterface)
 $ThicknessAlNSub          = 300.0    # thickness of AlN substrate                      (DisplayUnit:nm)(HighlightInUserInterface)
 
@@ -354,15 +354,15 @@ database{
 
       lattice_consts{
          a           = 3.112                                    # Vurgaftman1/Vurgaftman2 (300 K) and O. Ambacher, Review
-         a_expansion = 0                                        #
+         a_expansion = 1.291e-5                                        #
          # a_expansion = 4.15e-5                                  # This value corresponds to a different equation! http://www.ioffe.rssi.ru/SVA/NSM/Semicond/AlN/basic.html Sirota, N.N., Golodushko, V.Z., Tezisy Dokl., Vses Konf. Khi., Svyazi Poluprovdn. Polumetallakh 5th (1974) 98
          c           = 4.982                                    # Vurgaftman1/Vurgaftman2 (300 K) and O. Ambacher, Review
-         c_expansion = 0                                        #
+         c_expansion = 2.626e-5                                        #
          # c_expansion = 5.27e-5                                  # This value corresponds to a different equation! http://www.ioffe.rssi.ru/SVA/NSM/Semicond/AlN/basic.html Sirota, N.N., Golodushko, V.Z., Tezisy Dokl., Vses Konf. Khi., Svyazi Poluprovdn. Polumetallakh 5th (1974) 98
       }
 
       mass_density{
-         rho = 5.316e3                                          # GaN value
+         rho = 3230                                          # Bassalar et. al.
       }
 
       dielectric_consts{
@@ -390,8 +390,8 @@ database{
       }
 
       optical_phonons{
-         LO_energy_l = 90e-3                                    # GaN value, NEGF currently assumes isotropy
-         LO_energy_t = 90e-3                                    # GaN value, NEGF currently assumes isotropy
+         LO_energy_l = 99e-3                                    # Bassaler et. al., Adv. Electron. Mater. 2024, 2400069, value, NEGF currently assumes isotropy
+         LO_energy_t = 99e-3                                    # Bassaler et. al., Adv. Electron. Mater. 2024, 2400069, NEGF currently assumes isotropy
          LO_width  = 3e-3                                       # GaN value, only used by MSB
          TO_energy_l = 0                                        # UNKNOWN
          TO_energy_t = 0                                        # UNKNOWN
@@ -478,15 +478,15 @@ database{
 
       lattice_consts{
          a           = 3.189                                    # Vurgaftman1/Vurgaftman2 (300 K) and O. Ambacher, Review
-         a_expansion = 0                                        #
+         a_expansion = 1.783e-5                                        #
          # a_expansion = 5.59e-5                                  # This value corresponds to a different equation! http://www.ioffe.rssi.ru/SVA/NSM/Semicond/GaN/thermal.html Qian W. et al., MRS Symposium Proceedings, Pittsburgh, 475-486 (1996)
          c           = 5.185                                    # Vurgaftman1/Vurgaftman2 (300 K) and O. Ambacher, Review
-         c_expansion = 0                                        #
+         c_expansion = 1.644e-5                                        #
          # c_expansion = 3.17e-5                                  # This value corresponds to a different equation! http://www.ioffe.rssi.ru/SVA/NSM/Semicond/GaN/thermal.html Qian W. et al., MRS Symposium Proceedings, Pittsburgh, 475-486 (1996)
       }
 
       mass_density{
-         rho = 5.316e3
+         rho = 6150                                             # NSM archive
       }
 
       dielectric_consts{
@@ -507,8 +507,8 @@ database{
       }
 
       optical_phonons{
-         LO_energy_l = 90e-3                                    # NEGF default: NEGF currently assumes isotropy
-         LO_energy_t = 90e-3                                    # NEGF default: NEGF currently assumes isotropy
+         LO_energy_l = 91.2e-3                                    # Bassaler et. al., Adv. Electron. Mater. 2024, 2400069: NEGF currently assumes isotropy
+         LO_energy_t = 91.2e-3                                    # Bassaler et. al., Adv. Electron. Mater. 2024, 2400069: NEGF currently assumes isotropy
          # LO_energy_l = 91.13e-3                                 # nn3 default: JAP 85, 1475 (1999)
          # LO_energy_t = 92.12e-3                                 # nn3 default: JAP 85, 1475 (1999)
          LO_width  = 3e-3                                       # GaAs value, only used by MSB
@@ -528,8 +528,8 @@ database{
 
       conduction_bands{
          Gamma{
-            mass_l                = 0.206                        # m_perp=0.202, m_perp=0.202, m_par=0.206 (with respect to c-axis) - http://www.ioffe.rssi.ru/SVA/NSM/Semicond/GaN/bandstr.html
-            mass_t                = 0.202                        # m_perp=0.202, m_perp=0.202, m_par=0.206 (with respect to c-axis) - http://www.ioffe.rssi.ru/SVA/NSM/Semicond/GaN/bandstr.html
+            mass_l                = 0.20                        # m_perp=0.202, m_perp=0.202, m_par=0.206 (with respect to c-axis) - http://www.ioffe.rssi.ru/SVA/NSM/Semicond/GaN/bandstr.html
+            mass_t                = 0.20                        # m_perp=0.202, m_perp=0.202, m_par=0.206 (with respect to c-axis) - http://www.ioffe.rssi.ru/SVA/NSM/Semicond/GaN/bandstr.html
             bandgap               = 3.510                        # Vurgaftman2 (0 K)
             bandgap_alpha         = 0.909e-3                     # Vurgaftman2
             bandgap_beta          = 830                          # Vurgaftman2
@@ -1147,7 +1147,7 @@ strain{
    residual_strain = $StrainRelaxation                    # residuals strain in the substrate scales lattice parameter of the substrate (only for the purpose of strain computation)
 
    output_strain_tensor{ simulation_system = yes }
-   output_polarization_charges{}
+   output_polarization_charge{}
    output_polarization_vector{}
    output_hydrostatic_strain{ }
 
