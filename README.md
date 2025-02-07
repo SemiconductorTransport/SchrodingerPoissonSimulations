@@ -23,10 +23,11 @@ __Note:__ Each folder contains special `helper.txt` file to guide you through de
 ## Installation
 ### 1.1 Requirements
 #### 1.1.1 Python dependency
+```
   - python >= 3.10, pathlib, os, sys, shutil, importlib, datetime,
   - nextnanopy, numpy, matplotlib
   - pandas, openpyxl
-
+```
 ### 1.2 Scripts executation or run command
 1. Untar nextnano_sim.tar.bz2:
 ```
