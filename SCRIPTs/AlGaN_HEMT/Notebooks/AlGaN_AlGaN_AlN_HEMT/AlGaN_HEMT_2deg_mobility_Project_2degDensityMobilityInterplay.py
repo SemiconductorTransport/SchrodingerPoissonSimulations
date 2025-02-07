@@ -56,7 +56,7 @@ resave_mobilities = True # re-save the calculated mobility values. Make sure you
 # In[ ]:
 
 
-savefigure = True
+savefigure = 0
 FigFormat = 'png'
 FigFormatPaper = 'eps'
 fig_save_dpi = 300
@@ -740,6 +740,14 @@ for name, group in df_channel_comp_group:
     if f'{name[0]:0.2f}' in plot_selected_compositions: 
         axs.plot(xx, zz, '-', marker=markers_[ii],label=f'x={name[0]:.2f}', ms=12)
         ii+=1
+for name, group in df_channel_comp_group:
+    xx, zz = group['ThicknessAlGaNBarrier'],  group['TOT']
+    if f'{name[0]:0.2f}' in plot_selected_compositions: 
+        if any(zz<1e-5):
+            undefined_mobilities = np.where(zz<1)[0]
+            axs.plot(xx.iloc[undefined_mobilities], zz.iloc[undefined_mobilities], '-', color='gray',
+                     marker=markers_[ii], mec='k', mfc='white', ms=12)
+        ii+=1
 #axs.set_yscale('log')
 axs.set_xlabel(x_label)
 axs.set_ylabel(y_label)
@@ -832,6 +840,14 @@ for name, group in df_channel_comp_group:
     xx, zz = group['ThicknessAlGaNBarrier'],  group['LFOMnorm']
     if f'{name[0]:0.2f}' in plot_selected_compositions:
         axs.plot(xx, zz, '-', marker=markers_[ii],label=f'{name[0]:.2f}', ms=12)
+        ii+=1
+for name, group in df_channel_comp_group:
+    xx, zz = group['ThicknessAlGaNBarrier'],  group['LFOMnorm']
+    if f'{name[0]:0.2f}' in plot_selected_compositions: 
+        if any(zz<1e-5):
+            undefined_mobilities = np.where(zz<1e-5)[0]
+            axs.plot(xx.iloc[undefined_mobilities], zz.iloc[undefined_mobilities], '-', color='gray',
+                     marker=markers_[ii], mec='k', mfc='white', ms=12)
         ii+=1
 #axs.set_yscale('log')
 axs.set_xlabel(x_label)

@@ -167,7 +167,7 @@ $EndDevice             = $EndAlNSub                                             
 # Check if 2DEG Left boundary is left to the Barrier start
 # As the 2DEG WFs extend more towards right we shift the Qregion only 1/4th to left boundary.
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-$LeftShift_2DEG_Boundary       = $QR_width_2DEG * 0.25
+$LeftShift_2DEG_Boundary       = ($DEG_QR_width * 0.25) + $CompositionGradLength2DEG
 $QRLeft_2DEG_Boundary          = ($StartAlGaNChannel - $StartAlGaNBarrier) - $LeftShift_2DEG_Boundary
 $IsBarrierThin                 = $QRLeft_2DEG_Boundary <= 0
 !IF($IsBarrierThin)
@@ -188,7 +188,7 @@ $QRegion_Right_2DEG            = $QRegion_Left_2DEG + $QR_width_2DEG            
 # Define coordinate of 2DHG quantum region.
 # As the 2DHG WFs extend more towards left we shift the Qregion only 3/4th to left boundary.
 #---------------------------------------------------------------------------------------------------
-$LeftShift_2DHG_Boundary   = $QR_width_2DHG * 0.75
+$LeftShift_2DHG_Boundary   = $DHG_QR_width * 0.75
 $RightShift_2DHG_Boundary  = $QR_width_2DHG - $LeftShift_2DHG_Boundary
 $QRLeft_2DHG_Position      = $EndAlGaNChannel - $LeftShift_2DHG_Boundary
 

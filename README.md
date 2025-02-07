@@ -10,7 +10,7 @@ All three steps are seamlessly integrated into a single workflow using the [next
 ## Projects
 This repository is built on the following projects:
 
-* __2DEG_DensityMobilityInterplay__ : Mondal et. al., "Interplay of carrier density and mobility in Al-rich (Al,Ga)N-Channel HEMTs: Impact on high-power device performance", TBA
+* __2DEG_DensityMobilityInterplay__ : Mondal et. al.,  TBA
 
 ## Folders
  - [SCRIPTs](SCRIPTs) : Jupyter Notebooks and executable python scripts for the running simulations and post processing.
@@ -54,7 +54,7 @@ __Note:__ Each folder contains special `helper.txt` file to guide you through de
 ## References and citations
 If you find this repository usefull for your work, we would appreciate if you cite the appropriate project specific references along with the software/packages used. Here is the complete list of references [(bibliography file)](docs/REFERENCES.md):
 
->> [1] TBA
+>> [1] Mondal et. al., TBA
 
 >>
 
@@ -71,16 +71,12 @@ Developer: [Badal Mondal](https://github.com/bmondal94)
 
 Maintainer: [Badal Mondal](https://github.com/bmondal94)
 
-Project collaborators: 
-
-* [Dr. Stefan Schulz, Tyndall National Institute](https://www.tyndall.ie/people/stefan-schulz/)
-
 ## Contributors
 
 Complete list of contributors in this repository can be found [here](https://github.com/SemiconductorTransport/SchrodingerPoissonSimulations/graphs/contributors). We sincerely thank each and every contributor for their valuable input and support.
 
 ## Version release history
-Latest release: v0.2.0
+Latest release: v1.0.0
 
 Chekout out version release history [here](docs/RELEASE.md) for the full list of updates and upgrades.
 

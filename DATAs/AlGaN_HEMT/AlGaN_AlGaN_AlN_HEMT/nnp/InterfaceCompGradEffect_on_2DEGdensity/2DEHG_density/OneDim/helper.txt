@@ -1,0 +1,20 @@
+# Sheet name: description
+### ========================================================================
+Lb_effective_scan : Effective barrier thickness variation simulations for AlN(Lb-delta)/Al0.75Ga0.25N(300nm)/AlN(300nm)
+
+Lb_fix_scan : Fix barrier thickness; additional composition gradient variation simulations for AlN(Lb+delta)/Al0.75Ga0.25N(300nm)/AlN(300nm)
+
+Lc_effective_scan : Effective channel thickness variation simulations for AlN(25)/Al0.75Ga0.25N(300+delta)/AlN(300nm)
+### ========================================================================
+ 
+# Sheet column name: description
+### ========================================================================
+0th column    : Row indices
+1st column(s) : The parameter(s) varied in simulations
+2DEG_device   : Intergrated 2D electron gas density over whole device
+2DEG_BC       : Intergrated 2D electron gas density around the barrier-channel interface (within quantum region)
+2DEG_SC       : Intergrated 2D electron gas density around the Substrate/Buffer-channel interface (within quantum region)
+2DHG_device   : Intergrated 2D hole gas density over whole device
+2DHG_BC       : Intergrated 2D hole gas density around the barrier-channel interface (within quantum region)
+2DHG_SC       : Intergrated 2D hole gas density around the Substrate/Buffer-channel interface (within quantum region)
+### ========================================================================
