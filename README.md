@@ -55,7 +55,7 @@ __Note:__ Each folder contains special `helper.txt` file to guide you through de
 ## References and citations
 If you find this repository usefull for your work, we would appreciate if you cite the appropriate project specific references along with the software/packages used. Here is the complete list of references [(bibliography file)](docs/REFERENCES.md):
 
->> [1] Mondal et. al., TBA
+>> [1] B. Mondal, P. Pampili, J. Mukherjee, D. Moran, P.J. Parbrook, S. Schulz, Interplay of carrier density and mobility in Al-rich (Al,Ga)N-channel HEMTs: Impact on high-power device performance potential. [preprint arXiv:2502.13809](https://doi.org/10.48550/arXiv.2502.13809)
 
 >>
 

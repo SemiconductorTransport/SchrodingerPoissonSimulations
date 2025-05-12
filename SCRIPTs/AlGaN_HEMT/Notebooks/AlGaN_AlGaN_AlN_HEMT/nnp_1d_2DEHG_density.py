@@ -5,7 +5,7 @@
 
 # ## 1. General settings
 
-# In[1]:
+# In[ ]:
 
 
 submit_cluster = 0 # Submit the job to the cluster or not.
@@ -13,7 +13,7 @@ submit_cluster = 0 # Submit the job to the cluster or not.
 
 # ### 1.1 Import modules
 
-# In[2]:
+# In[ ]:
 
 
 if not submit_cluster:
@@ -21,9 +21,9 @@ if not submit_cluster:
     get_ipython().run_line_magic('autoreload', '2')
 
 
-# ### 1.1.1 Adding local module path to python module search path
+# #### 1.1.1 Adding local module path to python module search path
 
-# In[3]:
+# In[ ]:
 
 
 from pathlib import Path
@@ -35,7 +35,7 @@ sys.path.append(module_path)
 
 # #### 1.1.2 Import global modules
 
-# In[4]:
+# In[ ]:
 
 
 import shutil
@@ -52,9 +52,9 @@ import pandas as pd
 from matplotlib.widgets import Slider
 
 
-# #### 1.1.2 Import local defined modules
+# #### 1.1.3 Import local defined modules
 
-# In[5]:
+# In[ ]:
 
 
 from src.PlotFunctions import general_plot_functions, Plot1DFuns, PlotQuasi3DFuns
@@ -65,7 +65,7 @@ lpltq3d = PlotQuasi3DFuns()
 
 # ### 1.2 Matplotlib settings
 
-# In[6]:
+# In[ ]:
 
 
 params = {'figure.figsize': (8, 6), 'legend.fontsize': 18, 'axes.labelsize': 24, 'axes.titlesize': 24,
@@ -78,7 +78,7 @@ plt.rc('font', size=24)
 
 # ### 1.3 nextnanopy settings
 
-# In[7]:
+# In[ ]:
 
 
 #%% ===========================================================================
@@ -111,10 +111,10 @@ print(f'-nextnano config: {nn.config}')
 
 # ### 1.4 Set tasks to perform
 
-# In[108]:
+# In[ ]:
 
 
-run_sim = 0 # run single simulations
+run_sim = 1 # run single simulations
 run_sweep = 0 # run sweep simulations
 run_sim_specific_sample = False # run single simulation for specific sample device
 run_sweep_specific_sample = False # run sweep simulation for specific sample device
@@ -127,7 +127,7 @@ savefigure = True # save the figures generated
 
 # ### 1.5 Input and output directories/files
 
-# In[119]:
+# In[ ]:
 
 
 #++++++++++++++++++++++++++++++++++++++++++++++
@@ -143,8 +143,8 @@ FileExtension = '.in'
 # project ID to track the simulations project-wise. 
 # Note: During 1st set of simulations we did not have the project id. 
 # The simulations were already done with out project id.
-my_project_id_old = ''
-my_project_id = '2DEG_DensityMobilityInterplay'
+my_project_id_old = 'InterfaceCompGradEffect_on_2DEGdensity'
+my_project_id = 'InterfaceCompGradEffect_on_2DEGdensity' #'2DEG_DensityMobilityInterplay'
 upgrade_figs_folder = not bool(len(my_project_id_old.strip()))
 replace_figs_path = ('nnp', f'nnp/{my_project_id}')
 # inner location of input file within INPUTs folder
@@ -209,7 +209,7 @@ mkdir_if_not_exist(folder_figs_)
 # ['.pdf','.svg','.jpg','.png']
 #++++++++++++++++++++++++++++++++++++++++++++++
 FigFormat = '.png'
-FigFormat4Paper = '.eps'
+FigFormat4Paper = '.png'
 FigDpi = 300
 color_map = 'viridis'
 
@@ -224,39 +224,40 @@ color_map = 'viridis'
 # name_of_set == name of the set. choosen by user. arbitrary. 
 # sweep_variable == name of sweep variable that you want to sweep. name must be in the input file.
 SweepVariablesSet = { 
-    #----------------------- Project: 2DEG_DensityMobilityInterplay -----------------------
-    'NeumannBCEndDevice' : 
-                    {'ThicknessAlNSub'          : [300, 600, 1200, 1500, 1800, 2000]},
-    'SchottkyBarrierEndDevice' : 
-                    {'ThicknessAlNSub'          : [300, 600, 1200, 1500, 1800, 2000]},
-    'SchottkyContactScan'       : 
-                    {'SchottkyBarrierHeight'    : np.linspace( 0.0,   4.0, num= 9)},
-    'BandgapBowingScan'         :
-                    {'AlGaNbandgapBowing'       : [0.5, 0.7, 0.9, 1.1, 1.3]},
-    'PyroelectricBowingScan'    : 
-                    {'AlGaNpyroelectricBowing'  : [-0.1, -0.021, 0.0]},
-    'BarrierThicknessScan' : 
-                    {'ThicknessAlGaNBarrier'    : [10, 25, 50, 75, 100, 150, 200, 250, 300]},
-    'ChannelThicknessScan'      : 
-                    {'ThicknessAlGaNChannel'    : np.linspace(50.0, 600.0, num=23)},
-    'Al85Const2DEGReverseEng' : 
-                    {'ThicknessAlGaNBarrier'    : [50, 75, 100, 150, 200, 250, 300, 350]},  
-    'TemperatureScan'           : 
-                    {'Temperature'              : np.linspace(50.0, 600.0, num=23)},
-    'GaNChannelStudy' : 
-                    {'Temperature'              : np.linspace(50.0, 600.0, num=23)},
-    'CompositionBThicknessScan' : 
-                    {'AlContentBarrier'         : np.linspace( 0.5,   1.0, num=11), 
-                     'AlContentChannel'         : np.linspace( 0.5,   1.0, num=11),
-                     'ThicknessAlGaNBarrier'    : np.linspace( 5.0,  50.0, num=10)
-                     }
-    # #-------------------- Project: InterfaceCompGradEffect_on_2DEGdensity ------------
-    # 'CompositionGradLengthScan2DEG' : 
-    #                 {'CompositionGradLength2DEG': np.linspace( 0.0,  25.0, num=6)},
-    # 'FixBarrierCompositionGradLengthScan2DEG' : 
-    #                 {'CompositionGradLength2DEG': np.linspace( 0.0,  25.0, num=6)},
-    # 'CompositionGradLengthScan2DHG' : 
-    #                 {'CompositionGradLength2DHG': np.linspace(50.0,  200.0, num=4)},
+    # #----------------------- Project: 2DEG_DensityMobilityInterplay -----------------------
+    # 'NeumannBCEndDevice' : 
+    #                 {'ThicknessAlNSub'          : [300, 600, 1200, 1500, 1800, 2000]},
+    # 'SchottkyBarrierEndDevice' : 
+    #                 {'ThicknessAlNSub'          : [300, 600, 1200, 1500, 1800, 2000]},
+    # 'SchottkyContactScan'       : 
+    #                 {'SchottkyBarrierHeight'    : np.linspace( 0.0,   4.0, num= 9)},
+    # 'BandgapBowingScan'         :
+    #                 {'AlGaNbandgapBowing'       : [0.5, 0.7, 0.9, 1.1, 1.3]},
+    # 'PyroelectricBowingScan'    : 
+    #                 {'AlGaNpyroelectricBowing'  : [-0.1, -0.021, 0.0]},
+    # 'BarrierThicknessScan' : 
+    #                 {'ThicknessAlGaNBarrier'    : [10, 25, 50, 75, 100, 150, 200, 250, 300]},
+    # 'ChannelThicknessScan'      : 
+    #                 {'ThicknessAlGaNChannel'    : np.linspace(50.0, 600.0, num=23)},
+    # 'Al85Const2DEGReverseEng' : 
+    #                 {'ThicknessAlGaNBarrier'    : [50, 75, 100, 150, 200, 250, 300, 350]},  
+    # 'TemperatureScan'           : 
+    #                 {'Temperature'              : np.linspace(50.0, 600.0, num=23)},
+    # 'GaNChannelStudy' : 
+    #                 {'Temperature'              : np.linspace(50.0, 600.0, num=23)},
+    # 'CompositionBThicknessScan' : 
+    #                 {'AlContentBarrier'         : np.linspace( 0.5,   1.0, num=11), 
+    #                  'AlContentChannel'         : np.linspace( 0.5,   1.0, num=11),
+    #                  'ThicknessAlGaNBarrier'    : np.linspace( 5.0,  50.0, num=10)
+    #                  }
+    #-------------------- Project: InterfaceCompGradEffect_on_2DEGdensity ------------
+    'CompositionGradLengthScan2DEG' : 
+                    {'CompositionGradLength2DEG': np.linspace( 0.0,  25.0, num=6)},
+    'FixBarrierCompositionGradLengthScan2DEG' : 
+                    {'CompositionGradLength2DEG': np.linspace( 0.0,  25.0, num=6)},
+    'CompositionGradLengthScan2DHG' : 
+                    {'CompositionGradLength2DHG': np.linspace(50.0,  200.0, num=4)}
+    # #-------------------- Project: TBD ------------
     # 'IntentionalDopingConcScanSC' : 
     #             {'IntentionalDopingSCConcentration': [1.0e18, 5.0e18, 1.0e19, 5.0e19, 1.0e20, 2.0e20, 
     #                                                   5.0e20, 1.0e21, 5.0e21, 1.0e22, 5.0e22, 1.0e23]},
@@ -309,55 +310,69 @@ TemporaryInputFiles4 = {'SchottkyBarrierEndDevice': {'SwitchKey': ['end_device_a
                        }
 
 
-# In[1]:
+# In[ ]:
 
 
 # Here we create mapping between the long data sheet name to short one.
 # Windows system can not handle sheet name > 31 charachters
 MappingShortDataSheetName = {
-                             'sim_sweep__AlGaNpyroelectricBowing':
-                             {'abbr':'Psp_bowing_scan', 
-                              'description': 'AlGaN pyroelectric bowing parameter variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)'
+                            #----------------------- Project: 2DEG_DensityMobilityInterplay -----------------------
+                            #  'sim_sweep__AlGaNpyroelectricBowing':
+                            #  {'abbr':'Psp_bowing_scan', 
+                            #   'description': 'AlGaN pyroelectric bowing parameter variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)'
+                            #  },
+                            #  'sim_sweep__AlGaNbandgapBowing': 
+                            # {'abbr':'Eg_bowing_scan', 
+                            #   'description': 'AlGaN bandgap bowing parameter variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)'
+                            #  },
+                            # 'sim_sweep__SchottkyBarrierHeight':
+                            #  {'abbr':'Hschottky_scan', 
+                            #   'description': 'Schottky barrier height variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)'
+                            #  },
+                            # 'GaN_C_sweep__Temperature':
+                            #  {'abbr':'GaN_T_scan', 
+                            #   'description': 'Temperature variation simulations for Al75Ga25N(25nm)/GaN(300nm)/GaN'
+                            #  },
+                            #  'sim_sweep__Temperature':
+                            # {'abbr':'T_scan', 
+                            #   'description': 'Temperature variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)'
+                            #  },
+                            # 'Al85_C_sweep__ThicknessAlGaNBarrier': 
+                            #  {'abbr':'Al85GaN_Lb_scan', 
+                            #   'description': 'AlGaN barrier thickness variation simulations for AlN(Lb)/Al85Ga15N(300nm)/AlN(300nm)'
+                            #  },
+                            # 'sim_sweep__ThicknessAlNSub':
+                            #  {'abbr':'Lsub_scan', 
+                            #   'description': 'Substrate thickness variation simulations with Neumann end contact for AlN(25nm)/Al75Ga25N(300nm)/AlN(Lsub)'
+                             # },
+                             # 'end_bc_Schottky_sweep__ThicknessAlNSub':
+                             # {'abbr':'end_scottky_Lsub_scan', 
+                             #  'description': 'Substrate thickness variation simulations with Schottky end contact for AlN(25nm)/Al75Ga25N(300nm)/AlN(Lsub)'
+                             # },
+                             # 'sim_sweep__ThicknessAlGaNBarrier':
+                             # {'abbr':'Lb_scan', 
+                             #  'description': 'AlGaN barrier thickness variation simulations for AlN(Lb)/Al75Ga25N(300nm)/AlN(300nm)'
+                             # },
+                             # 'sim_sweep__ThicknessAlGaNChannel':
+                             # {'abbr':'Lc_scan', 
+                             #  'description': 'AlGaN channel thickness variation simulations for AlN(25nm)/Al75Ga25N(Lc)/AlN(300nm)'
+                             # },
+                             # 'sim_sweep__AlContentBarrier__AlContentChannel__ThicknessAlGaNBarrier':
+                             # {'abbr':'x_y_Lb_scan', 
+                             #  'description': 'AlGaN composition and barrier thickness variation simulations for AlyGa1-yN(Lb)/AlxGa1-xN(300nm)/AlN(300nm)'
+                             # },
+                            #-------------------- Project: InterfaceCompGradEffect_on_2DEGdensity ------------
+                             'sim_sweep__CompositionGradLength2DEG' : 
+                             {'abbr':'Lb_effective_scan', 
+                              'description': 'Effective barrier thickness variation simulations for AlN(Lb-delta)/Al0.75Ga0.25N(300nm)/AlN(300nm)'
                              },
-                             'sim_sweep__AlGaNbandgapBowing': 
-                            {'abbr':'Eg_bowing_scan', 
-                              'description': 'AlGaN bandgap bowing parameter variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)'
+                             'fix_barrier_sweep__CompositionGradLength2DEG' : 
+                             {'abbr':'Lb_fix_scan', 
+                              'description': 'Fix barrier thickness; additional composition gradient variation simulations for AlN(Lb+delta)/Al0.75Ga0.25N(300nm)/AlN(300nm)'
                              },
-                            'sim_sweep__SchottkyBarrierHeight':
-                             {'abbr':'Hschottky_scan', 
-                              'description': 'Schottky barrier height variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)'
-                             },
-                            'GaN_C_sweep__Temperature':
-                             {'abbr':'GaN_T_scan', 
-                              'description': 'Temperature variation simulations for Al75Ga25N(25nm)/GaN(300nm)/GaN'
-                             },
-                             'sim_sweep__Temperature':
-                            {'abbr':'T_scan', 
-                              'description': 'Temperature variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)'
-                             },
-                            'Al85_C_sweep__ThicknessAlGaNBarrier': 
-                             {'abbr':'Al85GaN_Lb_scan', 
-                              'description': 'AlGaN barrier thickness variation simulations for AlN(Lb)/Al85Ga15N(300nm)/AlN(300nm)'
-                             },
-                            'sim_sweep__ThicknessAlNSub':
-                             {'abbr':'Lsub_scan', 
-                              'description': 'Substrate thickness variation simulations with Neumann end contact for AlN(25nm)/Al75Ga25N(300nm)/AlN(Lsub)'
-                             },
-                             'end_bc_Schottky_sweep__ThicknessAlNSub':
-                             {'abbr':'end_scottky_Lsub_scan', 
-                              'description': 'Substrate thickness variation simulations with Schottky end contact for AlN(25nm)/Al75Ga25N(300nm)/AlN(Lsub)'
-                             },
-                             'sim_sweep__ThicknessAlGaNBarrier':
-                             {'abbr':'Lb_scan', 
-                              'description': 'AlGaN barrier thickness variation simulations for AlN(Lb)/Al75Ga25N(300nm)/AlN(300nm)'
-                             },
-                             'sim_sweep__ThicknessAlGaNChannel':
-                             {'abbr':'Lc_scan', 
-                              'description': 'AlGaN channel thickness variation simulations for AlN(25nm)/Al75Ga25N(Lc)/AlN(300nm)'
-                             },
-                             'sim_sweep__AlContentBarrier__AlContentChannel__ThicknessAlGaNBarrier':
-                             {'abbr':'x_y_Lb_scan', 
-                              'description': 'AlGaN composition and barrier thickness variation simulations for AlyGa1-yN(Lb)/AlxGa1-xN(300nm)/AlN(300nm)'
+                             'sim_sweep__CompositionGradLength2DHG' : 
+                             {'abbr':'Lc_effective_scan', 
+                              'description': 'Effective channel thickness variation simulations for AlN(25)/Al0.75Ga0.25N(300+delta)/AlN(300nm)'
                              }
                             }
 # Creating helper.txt of this mapping in the DATAs folder
@@ -425,7 +440,7 @@ def create_tmp_input_file_4_sweep(ScanVariableName, base_input_path, mapps_, Fil
 
 # ## 2. Perform simulations
 
-# In[121]:
+# In[ ]:
 
 
 for input_path in input_files_dest:
@@ -477,14 +492,14 @@ for input_path in input_files_dest:
 
 # ## 3. Create post-processed data sheet from sweep simulations
 
-# In[122]:
+# In[ ]:
 
 
 what_to_plots = ['2DEG', '2DHG']
 plot_data_files = ['integrated_density_electron.dat', 'integrated_density_hole.dat']
 
 
-# In[123]:
+# In[ ]:
 
 
 if create_data_sweep:
@@ -568,18 +583,18 @@ if create_data_sweep:
 
 # ### 3.1 Plot band diagram from single simulation results (** Require original simulation results)
 
-# In[124]:
+# In[ ]:
 
 
 # Define the region of band digram you want to zoom in
 # [[xmin, xmax], [which_band(s)], [shift_yr, y_left_major_locator_distance]]
-# zoom_band_diagram_regions = [[['QRegion_Left_2DEG', 'QRegion_Right_2DEG'], ['Gamma_', 'electron_Fermi_level_'], [-1, 1]],
-#                              [['QRegion_Left_2DHG', 'QRegion_Right_2DHG'], ['HH_', 'LH_', 'SO_', 'electron_Fermi_level_'], [-1, 0.2]]]
-zoom_band_diagram_regions = [[['EndAlGaNBarrier', 10], ['Gamma_', 'electron_Fermi_level_'], [-1, 0.4]],
-                             [['EndAlGaNChannel', 10], ['HH_', 'LH_', 'SO_', 'electron_Fermi_level_'], [-1, 0.4]]]
+zoom_band_diagram_regions = [[['QRegion_Left_2DEG', 'QRegion_Right_2DEG'], ['Gamma_', 'electron_Fermi_level_'], [-1, 1]],
+                             [['QRegion_Left_2DHG', 'QRegion_Right_2DHG'], ['HH_', 'LH_', 'SO_', 'electron_Fermi_level_'], [-1, 0.2]]]
+# zoom_band_diagram_regions = [[['EndAlGaNBarrier', 10], ['Gamma_', 'electron_Fermi_level_'], [-1, 0.4]],
+#                              [['EndAlGaNChannel', 10], ['HH_', 'LH_', 'SO_', 'electron_Fermi_level_'], [-1, 0.4]]]
 
 
-# In[125]:
+# In[ ]:
 
 
 #%matplotlib inline 
@@ -628,7 +643,7 @@ if do_plot:
             i+=1
 
 
-# In[126]:
+# In[ ]:
 
 
 #%matplotlib inline 
@@ -674,7 +689,7 @@ if do_plot:
                               FigFormat=FigFormat, FigDpi=FigDpi)
 
 
-# In[127]:
+# In[ ]:
 
 
 if do_plot:
@@ -712,7 +727,7 @@ if do_plot:
 
 # ### 3.2 Plot band diagram from sweep results (** Require original simulation results)
 
-# In[52]:
+# In[ ]:
 
 
 if do_plot_sweep:
@@ -803,13 +818,13 @@ if do_plot_sweep:
 
 # ##### 3.2.1.1 Set mapping of x-axis labels and x-ticks locator for different sweep plots
 
-# In[128]:
+# In[ ]:
 
 
 rescale_2deg_fact = 1e13  # Rescalings 2DEG in 10^13 unit
 
 
-# In[130]:
+# In[ ]:
 
 
 ## Map of some variables Sweep variables for plotting
@@ -830,10 +845,10 @@ mappp_ = {'SchottkyBarrierHeight':{'x_label_text': 'Schottky barrier height (eV)
           'ThicknessAlGaNBarrier':{'x_label_text': r'Barrier thickness, L$_\mathrm{B}$ (nm)', 
                                    'ticks_multiplicator_plot1': [50, 25, None, None],
                                    'ticks_multiplicator_plot2': [50, 25, None, None]},
-          'CompositionGradLength2DEG':{'x_label_text': 'Composition gradient length, $\\gamma$ (nm)', 
+          'CompositionGradLength2DEG':{'x_label_text': 'Composition gradient length, $\\Delta_L$ (nm)', 
                                    'ticks_multiplicator_plot1': [5, 2.5, None, None],
                                    'ticks_multiplicator_plot2': [5, 2.5, None, None]},
-          'CompositionGradLength2DHG':{'x_label_text': 'Composition gradient length, $\\gamma$ (nm)', 
+          'CompositionGradLength2DHG':{'x_label_text': 'Composition gradient length, $\\Delta_L$ (nm)', 
                                    'ticks_multiplicator_plot1': [50, 25, None, None],
                                    'ticks_multiplicator_plot2': [50, 25, None, None]},
           'Temperature':{'x_label_text': 'Temperature (K)', 
@@ -855,13 +870,29 @@ mappp_ = {'SchottkyBarrierHeight':{'x_label_text': 'Schottky barrier height (eV)
 
 # ##### 3.2.1.2 Plot 1D sweep variables vs property (e.g. 2DEG density)
 
-# In[131]:
+# In[ ]:
+
+
+# Defining axis labels
+if do_plot_sweep:
+    carrier_density_unit = '($10^{13} \\mathrm{cm}^{-2}$)'
+    deg_label_text = r'2DEG density, n$_\mathrm{2D}$' #'2DEG density' 
+    dhg_label_text = r'2DHG density' #'2DHG density'
+    dec_label_text = r'2DCG density' #'2DCG density'
+    if my_project_id == 'InterfaceCompGradEffect_on_2DEGdensity':
+        deg_label_text = 'EG density, n$_\\mathrm{e}$' #2/3DEG density
+        dhg_label_text = 'HG density, n$_\\mathrm{h}$' #2/3DHG density
+        dec_label_text = 'CG density , n$_\\mathrm{c}$'
+
+    y_label_text1 = f'{deg_label_text} {carrier_density_unit}'
+    y_label_text1_H = f'{dhg_label_text} {carrier_density_unit}'
+    y_label_text2 = f'{dec_label_text} {carrier_density_unit}'
+
+
+# In[ ]:
 
 
 if do_plot_sweep:
-    y_label_text1 = '2DEG density, n$_\\mathrm{2D}$ ($10^{13}$ $\\mathrm{cm}^{-2}$)' #2DEG density
-    y_label_text1_H = '2DHG density ($10^{13}$ $\\mathrm{cm}^{-2}$)'
-    y_label_text2 = '2DCG density ($10^{13}$ $\\mathrm{cm}^{-2}$)'
     for input_path in input_files_dest:
         print(f"{'*'*72}")
         input_filename = input_path.split('/')[-1]
@@ -922,11 +953,11 @@ if do_plot_sweep:
                                                 tick_multiplicator=ticks_multiplicator_plot1,
                                                 FigDpi=FigDpi, FigFormat=FigFormat4Paper,
                                                 figs_path=output_figs_sweep, filename=f'2DEG_{JJJ}', 
-                                                savefigure=0, x_log_scale=x_log_scale)
+                                                savefigure=savefigure, x_log_scale=x_log_scale)
                 if SweepVariablesKeys[0] in ['ThicknessAlGaNBarrier', 'ThicknessAlGaNChannel']: 
                     ax.axhline(y=1, c='k', ls='--')
                 lplt1d.save_figs(fig, filename=f'2DEG_{JJJ}', figs_path=output_figs_sweep, 
-                                 savefigure=savefigure, FigDpi=FigDpi, FigFormat=FigFormat4Paper)
+                                 savefigure=0, FigDpi=FigDpi, FigFormat=FigFormat4Paper)
                 #=============================================================================================
                 if SweepVariablesKeys[0] in ['ThicknessAlNSub']:
                     # Plot only 2DHG
@@ -943,18 +974,14 @@ if do_plot_sweep:
                                                 tick_multiplicator=ticks_multiplicator_plot2,
                                                 FigDpi=FigDpi, FigFormat=FigFormat4Paper, color='b',
                                                 figs_path=output_figs_sweep, filename=f'2DEHG_{JJJ}',
-                                                savefigure=True, x_log_scale=x_log_scale)
+                                                savefigure=savefigure, x_log_scale=x_log_scale)
                 #=============================================================================================
 
 
-# In[132]:
+# In[ ]:
 
 
 if do_plot_sweep:
-    deg_label_text = r'2DEG density, n$_\mathrm{2D}$' #'2DEG density' 
-    y_label_text1 = f'{deg_label_text} ($10^{{13}}$ $\\mathrm{{cm}}^{{-2}}$)'
-    y_label_text1_H = f'2DHG density ($10^{{13}}$ $\\mathrm{{cm}}^{{-2}}$)'
-    y_label_text2 = f'{deg_label_text} ($10^{{13}}$ $\\mathrm{{cm}}^{{-2}}$)'
     for input_path in input_files_dest:
         print(f"{'*'*72}")
         input_filename = input_path.split('/')[-1]
@@ -1021,7 +1048,7 @@ if do_plot_sweep:
 
 # ##### 3.2.1.3 Plot 3D sweep variables vs property (e.g. 2DEG density)
 
-# In[133]:
+# In[ ]:
 
 
 if do_plot_sweep:
@@ -1119,7 +1146,7 @@ if do_plot_sweep:
                                       savefigure=savefigure)
 
 
-# In[134]:
+# In[ ]:
 
 
 if do_plot_sweep:
@@ -1190,7 +1217,7 @@ if do_plot_sweep:
 
 # ##### 4.2.1.4 Plot 2DEG distributions for selected sweep samples (* require original simulation)
 
-# In[135]:
+# In[ ]:
 
 
 fname_lists = [['sim__AlContentBarrier_1.0_AlContentChannel_0.5_ThicknessAlGaNBarrier_50.0_',
@@ -1205,7 +1232,7 @@ zoom_band_diagram_regions = [[['EndAlGaNBarrier', 10], ['Gamma_', 'electron_Ferm
                              [['EndAlGaNChannel', 10], ['HH_', 'LH_', 'SO_', 'electron_Fermi_level_'], [-160, 0.4]]]
 
 
-# In[136]:
+# In[ ]:
 
 
 if do_plot_sweep:
@@ -1273,16 +1300,20 @@ if do_plot_sweep:
                                           savefigure=savefigure, FigFormat=FigFormat4Paper, FigDpi=FigDpi)
 
 
-# In[137]:
+# In[ ]:
 
 
 fname_lists = ['sim_sweep__CompositionGradLength2DEG/sim__CompositionGradLength2DEG_0.0_',
               'sim_sweep__CompositionGradLength2DEG/sim__CompositionGradLength2DEG_25.0_',
               'fix_barrier_sweep__CompositionGradLength2DEG/fix_barrier__CompositionGradLength2DEG_25.0_']
+# indices of combinations of plots from fname_lists. use None for simple CB plot
+plot_combinations = [[None], [0], [0,1], [0,2], [0,1,2]]
 clsp = ['r', 'c', 'm', 'g', 'y']
+zoom_band_diagram_regions = [[['EndAlGaNBarrier', 10], ['Gamma_', 'electron_Fermi_level_'], [-160, 0.4]],
+                             [['EndAlGaNChannel', 10], ['HH_', 'LH_', 'SO_', 'electron_Fermi_level_'], [-160, 0.4]]]
 
 
-# In[138]:
+# In[ ]:
 
 
 if do_plot_sweep:
@@ -1304,13 +1335,15 @@ if do_plot_sweep:
                 if upgrade_figs_folder: output_figs_sweep = output_figs_sweep.replace(replace_figs_path[0], replace_figs_path[1])
                 mkdir_if_not_exist(output_figs_sweep)
                 print(f'- Figs directory: {output_figs_sweep}')
-                for jkl in range(len(fname_lists)):
+                for jkl in plot_combinations:
                     print('')
-                    for i, sweep_folder_path_ in enumerate(fname_lists[:jkl+1]):
+                    for iii, i in enumerate(jkl):
+                        if jkl[iii] is None: i = 0
+                        sweep_folder_path_ = fname_lists[i]
                         data_folder_sweep =nn.DataFolder(os.path.join(folder_output_, sweep_folder_path_))
                         tmp_data_f_check = data_folder_sweep.fullpath
                         print(f'- Data folder/Plotting: {tmp_data_f_check}')
-                        scale_x_axis_ = 25 if 'fix_barrier' in tmp_data_f_check else None # re-scale x-axis by nm
+                        scale_x_axis_ = 25 if 'fix_barrier' in tmp_data_f_check else 0 # re-scale x-axis by nm
                         bandedge_characterstics = {'Gamma_':('Gamma', clsp[i]),
                                     'HH_':('heavy hole', 'y'),
                                     'LH_':('light hole', 'tab:blue'),
@@ -1318,26 +1351,47 @@ if do_plot_sweep:
                                     'electron_Fermi_level_':('Fermi level', 'gray')
                                     }
                         density_list=[('Electron_density', clsp[i])]
-                        if i == 0: 
+                        if jkl[iii] is None: 
+                            fig, ax, ax0, ax2 =\
+                            lplt1d.PlotBandDiagrams(data_folder_sweep, 
+                                                    figs_path=output_figs_sweep, software_=software_, 
+                                                    savefigure=False,bands_characters=bandedge_characterstics,
+                                                    band_edge_ls='--', scale_x_axis = scale_x_axis_,
+                                                    xaxis_n_locator=5,
+                                                    x_zoom_region=[10,60+scale_x_axis_],#['EndAlGaNBarrier', 60], 
+                                                    plot_bands=['Gamma_'],
+                                                    x_zoom_2nd_no_shift=True, 
+                                                    right_yaxis_shift= -7.2,
+                                                    y_left_major_locator_distance=1,
+                                                    density_list=density_list, plot_density=False, 
+                                                    show_twin_yaxis_labels=0, align_left_right_yaxis=False)
+                            ax.set_ylim(ymax=3.6, ymin=-0.4)
+                            ax.set_xlim(xmin=-20)
+                            ax.axhline(y=0,c='gray')
+                            lpltgen.save_figs(fig, filename=f'Gamma_00', figs_path=output_figs_sweep, 
+                                              savefigure=savefigure, FigFormat=FigFormat, FigDpi=FigDpi)
+                            break
+                        if iii == 0: 
                             fig=None; ax=None; ax0=None; ax2=None
                         fig, ax, ax0, ax2 =\
                         lplt1d.PlotBandDiagrams(data_folder_sweep, fig=fig, ax=ax, ax0=ax0, ax2=ax2,
                                                 figs_path=output_figs_sweep, software_=software_, 
                                                 savefigure=False,bands_characters=bandedge_characterstics,
                                                 band_edge_ls='--', scale_x_axis = scale_x_axis_,
-                                                FigDpi=FigDpi, FigFormat=FigFormat4Paper,xaxis_n_locator=5,
-                                                x_zoom_region=[10,60],#['EndAlGaNBarrier', 60], 
+                                                FigDpi=FigDpi, FigFormat=FigFormat4Paper,
+                                                #xaxis_n_locator=5,
+                                                x_zoom_region=[10,60+scale_x_axis_],#['EndAlGaNBarrier', 60], 
                                                 plot_bands=['Gamma_'],
                                                 x_zoom_2nd_no_shift=True, 
                                                 right_yaxis_shift= -7.2,
                                                 y_left_major_locator_distance=1,
                                                 density_list=density_list, plot_density=True, 
                                                 show_twin_yaxis_labels=0, align_left_right_yaxis=False)
-                        i+=1 
                         ax.set_ylim(ymax=3.6, ymin=-0.4)
-                        ax.set_xlim(xmin=-20)
+                        ax.set_xlim(xmin=-20,xmax=70)
                         ax.axhline(y=0,c='gray')
-                        lpltgen.save_figs(fig, filename=f'{zoom_region[1][0]}_{jkl}', figs_path=output_figs_sweep, 
+                        print(f'Gamma_{jkl}')
+                        lpltgen.save_figs(fig, filename=f'Gamma_{jkl}', figs_path=output_figs_sweep, 
                                           savefigure=savefigure, FigFormat=FigFormat, FigDpi=FigDpi)
 
 
