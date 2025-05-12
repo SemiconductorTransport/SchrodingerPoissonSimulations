@@ -10,7 +10,7 @@ All three steps are seamlessly integrated into a single workflow using the [next
 ## Projects
 This repository is built on the following projects:
 
-* __2DEG_DensityMobilityInterplay__ : Mondal et. al.,  TBA
+* __2DEG_DensityMobilityInterplay__ : B. Mondal, P. Pampili, J. Mukherjee, D. Moran, P.J. Parbrook, S. Schulz, Interplay of carrier density and mobility in Al-rich (Al,Ga)N-channel HEMTs: Impact on high-power device performance potential. [preprint arXiv:2502.13809](https://doi.org/10.48550/arXiv.2502.13809)
 
 ## Folders
  - [SCRIPTs](SCRIPTs) : Jupyter Notebooks and executable python scripts for the running simulations and post processing.
