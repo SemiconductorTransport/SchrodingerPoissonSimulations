@@ -6,27 +6,27 @@ Sample: AlGaN/AlGaN/AlN HEMT
 ### ========================================================================
 # Sheet name: description
 ### ========================================================================
-Psp_bowing_scan                 : AlGaN pyroelectric bowing parameter variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)
+Psp_bowing_scan                 : AlGaN pyroelectric bowing parameter (C/m^2) variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)
 
-Eg_bowing_scan                  : AlGaN bandgap bowing parameter variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)
+Eg_bowing_scan                  : AlGaN bandgap bowing parameter (eV) variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)
 
-Hschottky_scan                  : Schottky barrier height variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)
+Hschottky_scan                  : Schottky barrier height (eV) variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)
 
-GaN_T_scan                      : Temperature variation simulations for Al75Ga25N(25nm)/GaN(300nm)/GaN
+GaN_T_scan                      : Temperature (K) variation simulations for Al75Ga25N(25nm)/GaN(300nm)/GaN
 
-T_scan                          : Temperature variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)
+T_scan                          : Temperature (K) variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)
 
-Al85GaN_Lb_scan                 : AlGaN barrier thickness variation simulations for AlN(Lb)/Al85Ga15N(300nm)/AlN(300nm)
+Al85GaN_Lb_scan                 : AlGaN barrier thickness (nm) variation simulations for AlN(Lb)/Al85Ga15N(300nm)/AlN(300nm)
 
-Lsub_scan                       : Substrate thickness variation simulations with Neumann end contact for AlN(25nm)/Al75Ga25N(300nm)/AlN(Lsub)
+Lsub_scan                       : Substrate thickness (nm) variation simulations with Neumann end contact for AlN(25nm)/Al75Ga25N(300nm)/AlN(Lsub)
 
-end_scottky_Lsub_scan           : Substrate thickness variation simulations with Schottky end contact for AlN(25nm)/Al75Ga25N(300nm)/AlN(Lsub)
+end_scottky_Lsub_scan           : Substrate thickness (nm) variation simulations with Schottky end contact for AlN(25nm)/Al75Ga25N(300nm)/AlN(Lsub)
 
-Lb_scan                         : AlGaN barrier thickness variation simulations for AlN(Lb)/Al75Ga25N(300nm)/AlN(300nm)
+Lb_scan                         : AlGaN barrier thickness (nm) variation simulations for AlN(Lb)/Al75Ga25N(300nm)/AlN(300nm)
 
-Lc_scan                         : AlGaN channel thickness variation simulations for AlN(25nm)/Al75Ga25N(Lc)/AlN(300nm)
+Lc_scan                         : AlGaN channel thickness (nm) variation simulations for AlN(25nm)/Al75Ga25N(Lc)/AlN(300nm)
 
-x_y_Lb_scan                     : AlGaN composition and barrier thickness variation simulations for AlyGa1-yN(Lb)/AlxGa1-xN(300nm)/AlN(300nm)
+x_y_Lb_scan                     : AlGaN composition and barrier thickness (mole fraction, mole fraction, nm) variation simulations for AlyGa1-yN(Lb)/AlxGa1-xN(300nm)/AlN(300nm)
 
  
 ### ========================================================================

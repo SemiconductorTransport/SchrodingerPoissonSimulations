@@ -5,7 +5,7 @@
 
 # ## 1. General settings
 
-# In[41]:
+# In[ ]:
 
 
 submit_cluster = 0 # Submit the job to the cluster or not.
@@ -13,7 +13,7 @@ submit_cluster = 0 # Submit the job to the cluster or not.
 
 # ### 1.1 Import modules
 
-# In[42]:
+# In[ ]:
 
 
 if not submit_cluster:
@@ -23,7 +23,7 @@ if not submit_cluster:
 
 # ### 1.1.1 Adding local module path to python module search path
 
-# In[43]:
+# In[ ]:
 
 
 from pathlib import Path
@@ -35,7 +35,7 @@ sys.path.append(module_path)
 
 # #### 1.1.2 Import global modules
 
-# In[44]:
+# In[ ]:
 
 
 import shutil
@@ -54,7 +54,7 @@ from matplotlib.widgets import Slider
 
 # #### 1.1.2 Import local defined modules
 
-# In[45]:
+# In[ ]:
 
 
 from src.PlotFunctions import general_plot_functions, Plot1DFuns, PlotQuasi3DFuns
@@ -65,7 +65,7 @@ lpltq3d = PlotQuasi3DFuns()
 
 # ### 1.2 Matplotlib settings
 
-# In[46]:
+# In[ ]:
 
 
 params = {'figure.figsize': (8, 6), 'legend.fontsize': 18, 'axes.labelsize': 24, 'axes.titlesize': 24,
@@ -78,7 +78,7 @@ plt.rc('font', size=24)
 
 # ### 1.3 nextnanopy settings
 
-# In[47]:
+# In[ ]:
 
 
 #%% ===========================================================================
@@ -111,7 +111,7 @@ print(f'-nextnano config: {nn.config}')
 
 # ### 1.4 Set tasks to perform
 
-# In[48]:
+# In[ ]:
 
 
 run_sim = 0 # run single simulations
@@ -127,7 +127,7 @@ savefigure = True # save the figures generated
 
 # ### 1.5 Input and output directories/files
 
-# In[49]:
+# In[ ]:
 
 
 #++++++++++++++++++++++++++++++++++++++++++++++
@@ -216,7 +216,7 @@ color_map = 'viridis'
 
 # ### 1.5 Sweep parameters
 
-# In[50]:
+# In[ ]:
 
 
 # Specify sweep variables:
@@ -275,47 +275,47 @@ TemporaryInputFiles4 = {'SchottkyBarrierEndDevice': {'SwitchKey': ['end_device_a
 MappingShortDataSheetName = {
                              'sim_sweep__AlGaNpyroelectricBowing':
                              {'abbr':'Psp_bowing_scan', 
-                              'description': 'AlGaN pyroelectric bowing parameter variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)'
+                              'description': 'AlGaN pyroelectric bowing parameter (C/m^2) variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)'
                              },
                              'sim_sweep__AlGaNbandgapBowing': 
                             {'abbr':'Eg_bowing_scan', 
-                              'description': 'AlGaN bandgap bowing parameter variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)'
+                              'description': 'AlGaN bandgap bowing parameter (eV) variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)'
                              },
                             'sim_sweep__SchottkyBarrierHeight':
                              {'abbr':'Hschottky_scan', 
-                              'description': 'Schottky barrier height variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)'
+                              'description': 'Schottky barrier height (eV) variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)'
                              },
                             'GaN_C_sweep__Temperature':
                              {'abbr':'GaN_T_scan', 
-                              'description': 'Temperature variation simulations for Al75Ga25N(25nm)/GaN(300nm)/GaN'
+                              'description': 'Temperature (K) variation simulations for Al75Ga25N(25nm)/GaN(300nm)/GaN'
                              },
                              'sim_sweep__Temperature':
                              {'abbr':'T_scan', 
-                              'description': 'Temperature variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)'
+                              'description': 'Temperature (K) variation simulations for AlN(25nm)/Al75Ga25N(300nm)/AlN(300nm)'
                              },
                             'Al85_C_sweep__ThicknessAlGaNBarrier': 
                              {'abbr':'Al85GaN_Lb_scan', 
-                              'description': 'AlGaN barrier thickness variation simulations for AlN(Lb)/Al85Ga15N(300nm)/AlN(300nm)'
+                              'description': 'AlGaN barrier thickness (nm) variation simulations for AlN(Lb)/Al85Ga15N(300nm)/AlN(300nm)'
                              },
                             'sim_sweep__ThicknessAlNSub':
                              {'abbr':'Lsub_scan', 
-                              'description': 'Substrate thickness variation simulations with Neumann end contact for AlN(25nm)/Al75Ga25N(300nm)/AlN(Lsub)'
+                              'description': 'Substrate thickness (nm) variation simulations with Neumann end contact for AlN(25nm)/Al75Ga25N(300nm)/AlN(Lsub)'
                              },
                              'end_bc_Schottky_sweep__ThicknessAlNSub':
                              {'abbr':'end_scottky_Lsub_scan', 
-                              'description': 'Substrate thickness variation simulations with Schottky end contact for AlN(25nm)/Al75Ga25N(300nm)/AlN(Lsub)'
+                              'description': 'Substrate thickness (nm) variation simulations with Schottky end contact for AlN(25nm)/Al75Ga25N(300nm)/AlN(Lsub)'
                              },
                              'sim_sweep__ThicknessAlGaNBarrier':
                              {'abbr':'Lb_scan', 
-                              'description': 'AlGaN barrier thickness variation simulations for AlN(Lb)/Al75Ga25N(300nm)/AlN(300nm)'
+                              'description': 'AlGaN barrier thickness (nm) variation simulations for AlN(Lb)/Al75Ga25N(300nm)/AlN(300nm)'
                              },
                              'sim_sweep__ThicknessAlGaNChannel':
                              {'abbr':'Lc_scan', 
-                              'description': 'AlGaN channel thickness variation simulations for AlN(25nm)/Al75Ga25N(Lc)/AlN(300nm)'
+                              'description': 'AlGaN channel thickness (nm) variation simulations for AlN(25nm)/Al75Ga25N(Lc)/AlN(300nm)'
                              },
                              'sim_sweep__AlContentBarrier__AlContentChannel__ThicknessAlGaNBarrier':
                              {'abbr':'x_y_Lb_scan', 
-                              'description': 'AlGaN composition and barrier thickness variation simulations for AlyGa1-yN(Lb)/AlxGa1-xN(300nm)/AlN(300nm)'
+                              'description': 'AlGaN composition and barrier thickness (mole fraction, mole fraction, nm) variation simulations for AlyGa1-yN(Lb)/AlxGa1-xN(300nm)/AlN(300nm)'
                              }
                             }
 # Creating helper.txt of this mapping in the DATAs folder
@@ -355,7 +355,7 @@ Sample: AlGaN/AlGaN/AlN HEMT
     
 
 
-# In[51]:
+# In[ ]:
 
 
 ##=============================================================================
@@ -391,7 +391,7 @@ def create_tmp_input_file_4_sweep(ScanVariableName, base_input_path, mapps_, Fil
 
 # ## 2. Perform simulations
 
-# In[52]:
+# In[ ]:
 
 
 for input_path in input_files_dest:
@@ -443,7 +443,7 @@ for input_path in input_files_dest:
 
 # ## 3. Create post-processed data sheet from sweep simulations
 
-# In[53]:
+# In[ ]:
 
 
 what_to_plots = ['2DEG', '2DHG']
@@ -534,7 +534,7 @@ if create_data_sweep:
 
 # ### 4.1 Plot band diagram from single simulation results (** Require original simulation results)
 
-# In[54]:
+# In[ ]:
 
 
 # Define the region of band digram you want to zoom in
@@ -545,7 +545,7 @@ zoom_band_diagram_regions = [[['EndAlGaNBarrier', 10], ['Gamma_', 'electron_Ferm
                              [['EndAlGaNChannel', 10], ['HH_', 'LH_', 'SO_', 'electron_Fermi_level_'], [-1, 0.4]]]
 
 
-# In[182]:
+# In[ ]:
 
 
 if do_plot:
@@ -591,7 +591,7 @@ if do_plot:
             i+=1
 
 
-# In[184]:
+# In[ ]:
 
 
 if do_plot:
@@ -746,13 +746,13 @@ if do_plot_sweep:
 
 # ##### 4.2.1.1 Set mapping of x-axis labels and x-ticks locator for different sweep plots
 
-# In[55]:
+# In[ ]:
 
 
 rescale_2deg_fact = 1e13  # Rescalings 2DEG in 10^13 unit
 
 
-# In[56]:
+# In[ ]:
 
 
 ## Map of some variables Sweep variables for plotting
@@ -779,7 +779,7 @@ mappp_ = {'SchottkyBarrierHeight':{'x_label_text': 'Schottky barrier height (eV)
           'AlGaNbandgapBowing':{'x_label_text': 'Bandgap bowing (eV)', 
                                    'ticks_multiplicator_plot1': [0.2, 0.1, None, None],
                                    'ticks_multiplicator_plot2': [0.2, 0.1, 0.1, 0.05]},
-         'AlGaNpyroelectricBowing':{'x_label_text': 'Pyroelectric bowing', 
+         'AlGaNpyroelectricBowing':{'x_label_text': 'Pyroelectric bowing (C/m$^2$)', 
                                    'ticks_multiplicator_plot1': [0.1, 0.1, 0.2, 0.1],
                                    'ticks_multiplicator_plot2': [0.1, 0.1, 0.5, 0.25]}
          }
@@ -1113,7 +1113,7 @@ if do_plot_sweep:
 
 # ##### 4.2.1.4 Plot 2DEG distributions for selected sweep samples (* require original simulation)¶
 
-# In[176]:
+# In[ ]:
 
 
 fname_lists = [['sim__AlContentBarrier_1.0_AlContentChannel_0.5_ThicknessAlGaNBarrier_50.0_',
@@ -1128,7 +1128,7 @@ zoom_band_diagram_regions = [[['EndAlGaNBarrier', 10], ['Gamma_', 'electron_Ferm
                              [['EndAlGaNChannel', 10], ['HH_', 'LH_', 'SO_', 'electron_Fermi_level_'], [-160, 0.4]]]
 
 
-# In[181]:
+# In[ ]:
 
 
 if do_plot_sweep:

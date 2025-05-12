@@ -56,7 +56,7 @@ resave_mobilities = True # re-save the calculated mobility values. Make sure you
 # In[ ]:
 
 
-savefigure = 0
+savefigure = True
 FigFormat = 'png'
 FigFormatPaper = 'eps'
 fig_save_dpi = 300
@@ -634,7 +634,7 @@ for name, group in mobility_dff_300k.groupby(['ThicknessAlGaNBarrier']):
     
     #=====================================================================================
     if name[0] in [5,10,20,50]:
-        ax.scatter(group['AlContentContrast'], group['2DEG'], marker=markers_[ii],label=f'{name[0]:.2f} nm',s=100)
+        ax.scatter(group['AlContentContrast'], group['2DEG'], marker=markers_[ii],label=f'L$_\\mathrm{{B}}=${name[0]} nm',s=100)
         ii+=1
     
     #=====================================================================================
@@ -674,7 +674,7 @@ tick_multiplicator = [0.1, 0.05,10,5]
 XX = np.array(output_data.index, dtype=float)
 YY = np.array(output_data['2DEG_x_intersect'], dtype=float)
 fig, axs = plt.subplots(constrained_layout=True)
-axs.plot(YY, XX, 'ko-', ms=12)
+axs.plot(YY, XX, 'ko-', ms=12, label=r'n$_{\mathrm{2D}}=0$ cm$^{-2}$')
 #axs.set_yscale('log')
 #axs.set_ylabel('Critical barrier thickness (nm)')
 #axs.set_xlabel('Critical composition contrast')
@@ -686,11 +686,12 @@ plt2deg.set_tickers(axs, tick_multiplicator)
 fit_intercept = np.array(output_data['2DEG_y_intersect'], dtype=float)
 fit_slope = np.array(output_data['2DEG_slope'], dtype=float)
 YY = (1 - fit_intercept)/fit_slope
-axs.plot(YY, XX, 'cs-', ms=12)
+axs.plot(YY, XX, 'cs-', ms=12, label=r'n$_{\mathrm{2D}}=1\times 10^{13}$ cm$^{-2}$')
 #axs.set_yscale('log')
 axs.set_ylabel('Critical barrier thickness (nm)')
 #axs.set_ylabel('Barrier thickness, L$_\\mathrm{B}$ (nm)')
 axs.set_xlabel('Al composition contrast, $\\Delta_{yx}$')
+axs.legend()
 
 plt2deg.save_figure(f'Critical_comp_contrast_2DEG.{FigFormatPaper}', savefig=savefigure, show_plot=True,
                     fig=fig, CountFig=None, dpi=fig_save_dpi) 
@@ -959,40 +960,7 @@ fig, ax,_ = plt2deg.plot_2d_carrier_mobilities(aln_algan_dff, save_file_name=sav
                                                mode='2d_carrier_mobility', yaxis_label=y_label, xaxis_label=x_label,
                                                color=None, color_map='viridis', savefig=0, show_plot=False)
 plt2deg.set_tickers(ax, tick_multiplicator)
-plt2deg.save_figure(save_file_name_, fig=fig, savefig= savefigure, dpi=fig_save_dpi, show_plot=False)
-
-
-# In[ ]:
-
-
-fig, ax = plt.subplots(figsize=(9,6), constrained_layout=True)
-XX = np.array(aln_algan_300k['AlContentChannel'], dtype=float)
-ax.plot(XX, aln_algan_300k['2DEG_device']/rescale_2deg_fact, 'o-', c='k')
-ax.set_xlim(0.5,0.9)
-ax.set_xlabel(x_p_label_text)
-ax.set_ylabel(z_label['2DEG'])
-plt2deg.set_tickers(ax, tick_multiplicator)
-
-# Plotting mobility
-ax2 = ax.twinx() 
-ax2.plot(XX, aln_algan_300k['TOT'], 'o-', c='r')
-
-# Plotting bandgap
-bandgap_ = (6.20*XX + 3.43*(1-XX) + 0.7*XX*(1-XX))**5 
-ax2.plot(XX, bandgap_, 'o-', c='m')
-
-ax2.set_ylabel(z_label['TOT'], c='r')
-ax2.set_yscale('log')
-ax2.set_ylim(ymin=70, ymax=1e4)
-ax2.annotate(r'E$_\mathrm{g}^{5}$', xy=(XX[3], bandgap_[3]+1e3), color='m')
-
-# Plotting LFOM
-LFOM_300k = np.array(aln_algan_300k['LFOM'], dtype=float)/ref_LFOM 
-ax.plot(XX, LFOM_300k, 'o-', c='b')
-ax.annotate(r'LFOM$_{\mathrm{norm}}$', xy=(XX[3], LFOM_300k[3]-0.2), color='b')
-
-plt2deg.save_figure(f'AlN50AlGaN_300K_mu_FOM.{FigFormat}', savefig=savefigure, show_plot=True,
-                    fig=fig, CountFig=None, dpi=fig_save_dpi)
+plt2deg.save_figure(save_file_name_, fig=fig, savefig=savefigure, dpi=fig_save_dpi, show_plot=False)
 
 
 # In[ ]:
@@ -1142,46 +1110,183 @@ for ii in range(5):
     #break
 
 
+# ### 3.4.6 Mobility contributions for AlN(25nm)/AlGaN
+
 # In[ ]:
 
 
-fig, ax = plt.subplots(constrained_layout=True)
+aln_algan_300k = mobility_dff_300k[(mobility_dff_300k['AlContentBarrier']>0.99) & 
+                                    (mobility_dff_300k['ThicknessAlGaNBarrier']==25)]
+aln_algan_dff = aln_algan_300k[['AlContentChannel','IFR','AD','DIS','DP','PE','AP','POP','TOT']].copy()
+aln_algan_dff.rename(columns={'AlContentChannel':'comp'}, inplace=True)
+
+x_label = x_p_label_text
+y_label = z_label['TOT']
+save_file_name_ = f'mu_AlN25_AlGaN.{FigFormatPaper}'
+tick_multiplicator=[0.1, 0.05, None, None]
+
+
+# In[ ]:
+
+
+# Mobility contributions at 300K
+save_file_name_ = f'Mobility_contribs_AlN25AlGaN_300K.{FigFormatPaper}'
+x_label = x_p_label_text
+y_label = z_label['TOT']
+fig, ax,_ = plt2deg.plot_2d_carrier_mobilities(aln_algan_dff, save_file_name=save_file_name_,
+                                               ymin=5e1, ymax=2e5, xmax=0.9, xmin=0.5, y_scale_log=True, 
+                                               annotate_pos=(2,2), annotatetextoffset=(0,-20),show_right_ticks=True,
+                                               mode='2d_carrier_mobility', yaxis_label=y_label, xaxis_label=x_label,
+                                               color=None, color_map='viridis', savefig=0, show_plot=False)
+plt2deg.set_tickers(ax, tick_multiplicator)
+plt2deg.save_figure(save_file_name_, fig=fig, savefig=savefigure, dpi=fig_save_dpi, show_plot=False)
+
+
+# In[ ]:
+
+
+fig, ax = plt.subplots(figsize=(8,6), constrained_layout=True)
 XX = np.array(aln_algan_300k['AlContentChannel'], dtype=float)
-#ax.plot(XX, aln_algan_300k['2DEG_device']/rescale_2deg_fact, 'o-', c='k')
+yy_2deg_density = np.array(aln_algan_300k['2DEG_device']/rescale_2deg_fact, dtype=float)
+ax.plot(XX, yy_2deg_density, 's-.', c='g', ms=12)
+ax.axhline(y=1, c='k', ls='--')
+ax.annotate(z_label['2DEG'][14:], xy=(XX[3], yy_2deg_density[3]+0.08), color='g')
+circle0 = Ellipse((XX[2], yy_2deg_density[2]), width=0.015, height=0.2, 
+                        edgecolor='g', fc='None', lw=2)
+ax.add_patch(circle0)
+ax.annotate("", xy=(XX[2]-0.05, yy_2deg_density[2]-0.1), xytext=(XX[2], yy_2deg_density[2]-0.1),
+             arrowprops=dict(arrowstyle="->",color='g', linewidth=2))
 ax.set_xlim(0.5,0.9)
 ax.set_xlabel(x_p_label_text)
-ax.set_ylabel(z_label['2DEG'])
+ax.set_ylabel('')
 plt2deg.set_tickers(ax, tick_multiplicator)
 
-# # Plotting mobility
-# ax2 = ax.twinx() 
-# ax2.plot(XX, aln_algan_300k['TOT'], 'o-', c='r')
+#=========================================================================
+ax2 = ax.twinx() 
+ax2.set_ylabel('', c='r')
+ax2.set_yscale('log')
+ax2.set_ylim(ymin=50, ymax=1e4)
 
-# # Plotting bandgap
-# bandgap_ = (6.20*XX + 3.43*(1-XX) + 0.7*XX*(1-XX))**5 
-# ax2.plot(XX, bandgap_, 'o-', c='m')
+# Plotting mobility
+yy_mobility = np.array(aln_algan_300k['TOT'], dtype=float)
+ax2.plot(XX, yy_mobility, '*-.', c='c', ms=12)
+ax2.annotate(z_label['TOT'][15:], xy=(XX[3], yy_mobility[3]-25), color='c')
+circle1 = Ellipse((XX[5], yy_mobility[5]), width=0.014, height=30, 
+                        edgecolor='c', fc='None', lw=2)
+ax2.add_patch(circle1)
+ax2.annotate("", xy=(XX[5]+0.05, yy_mobility[5]-15), xytext=(XX[5], yy_mobility[5]-15),
+             arrowprops=dict(arrowstyle="->",color='c', linewidth=2))
 
-# ax2.set_ylabel(z_label['TOT'], c='r')
-# ax2.set_yscale('log')
-# ax2.set_ylim(ymin=70, ymax=1e4)
-# ax2.annotate(r'E$_\mathrm{g}^{5}$', xy=(XX[3], bandgap_[3]+1e3), color='m')
-
-# # Plotting sheet resistance
-# R_300k = np.array(aln_algan_300k['R'], dtype=float) #/20000 #1/20000 is to rescale
-# ax2.plot(XX, R_300k, 'o-', c='g')
-# ax2.annotate(r'R', xy=(XX[3], R_300k[3]-1e3), color='g')
+# Plotting bandgap
+bandgap_ = (6.25*XX + 3.51*(1-XX) + 0.7*XX*(1-XX))**5 
+ax2.plot(XX, bandgap_, '^-.', c='m', ms=12)
+ax2.annotate(r'E$_\mathrm{g}^{5}$ (eV$^{5}$)', xy=(XX[3], bandgap_[3]+1.2e3), color='m')
+circle2 = Ellipse((XX[5], bandgap_[5]), width=0.015, height=1.6e3, 
+                        edgecolor='m', fc='None', lw=2)
+ax2.add_patch(circle2)
+ax2.annotate("", xy=(XX[5]+0.05, bandgap_[2]+1.e3), xytext=(XX[5], bandgap_[3]+1.e3),
+             arrowprops=dict(arrowstyle="->",color='m', linewidth=2))
 
 # Plotting LFOM
 LFOM_300k = np.array(aln_algan_300k['LFOM'], dtype=float)/ref_LFOM 
-ax.plot(XX, LFOM_300k, 'o-', c='r')
-LFOM_300k = np.array(aln_algan_300k['LFOM_2DEG1e13'], dtype=float)/ref_LFOM 
-ax.plot(XX, LFOM_300k, 'o-', c='b')
-ax.set_ylabel(z_label['LFOMnorm_2'])
-ax.axhline(y=1, c='k', ls='--')
-#ax.annotate(r'LFOM$_{\mathrm{norm}}$', xy=(XX[3], LFOM_300k[3]-0.2), color='b')
+ax.plot(XX, LFOM_300k, 'o-', c='r', ms=12)
+ax.annotate(r'LFOM$^{\mathrm{B}}_{\mathrm{norm}}$', xy=(XX[1], LFOM_300k[1]+0.3), color='r')
+circle3 = Ellipse((XX[2], LFOM_300k[2]), width=0.015, height=0.2, 
+                        edgecolor='r', fc='None', lw=2)
+ax.add_patch(circle3)
+ax.annotate("", xy=(XX[2]-0.05, LFOM_300k[2]+0.1), xytext=(XX[2], LFOM_300k[2]+0.1),
+             arrowprops=dict(arrowstyle="->",color='r', linewidth=2))
 
-plt2deg.save_figure(f'AlN50AlGaN_300K_mu_FOM_paper1.{FigFormat}', savefig=savefigure, show_plot=True,
+LFOM_300k_cnst = np.array(aln_algan_300k['LFOM_2DEG1e13'], dtype=float)/ref_LFOM 
+ax.plot(XX, LFOM_300k_cnst, 'd-', c='b', ms=12)
+ax.annotate(r'LFOM$^{\mathrm{A}}_{\mathrm{norm}}$', xy=(XX[1], LFOM_300k_cnst[1]+0.3), color='b')
+circle4 = Ellipse((XX[2], LFOM_300k_cnst[2]), width=0.015, height=0.2, 
+                        edgecolor='b', fc='None', lw=2)
+ax.add_patch(circle4)
+ax.annotate("", xy=(XX[2]-0.05, LFOM_300k_cnst[2]+0.1), xytext=(XX[2], LFOM_300k_cnst[2]+0.1),
+             arrowprops=dict(arrowstyle="->",color='b', linewidth=2))
+
+plt2deg.set_tickers(ax, [0.1,0.05,0.5,0.25])
+
+plt2deg.save_figure(f'AlN25AlGaN_300K_mu_FOM_paper.{FigFormatPaper}', savefig=savefigure, show_plot=True,
                     fig=fig, CountFig=None, dpi=fig_save_dpi)
+
+
+# In[ ]:
+
+
+ii=0
+for ii in range(5):
+    fig, ax = plt.subplots(figsize=(8,6.), constrained_layout=True)
+    XX = np.array(aln_algan_300k['AlContentChannel'], dtype=float)
+
+    if ii >2:
+        yy_2deg_density = np.array(aln_algan_300k['2DEG_device']/rescale_2deg_fact, dtype=float)
+        ax.plot(XX, yy_2deg_density, 's-', c='k', ms=12)
+        ax.annotate(z_label['2DEG'][14:], xy=(XX[3], yy_2deg_density[3]+0.08), color='k')
+        circle0 = Ellipse((XX[2], yy_2deg_density[2]), width=0.015, height=0.2, 
+                                edgecolor='k', fc='None', lw=2)
+        ax.add_patch(circle0)
+        ax.annotate("", xy=(XX[2]-0.05, yy_2deg_density[2]-0.1), xytext=(XX[2], yy_2deg_density[2]-0.1),
+                     arrowprops=dict(arrowstyle="->",color='k', linewidth=2))
+        
+    ax.axhline(y=1, c='k', ls='--')
+    ax.set_xlim(0.5,0.9)
+    ax.set_ylim(-0.12,3.55)
+    ax.set_xlabel(x_p_label_text)
+    ax.set_ylabel('')
+    plt2deg.set_tickers(ax, [0.1,0.05,1.0,0.5])
+    
+    #=========================================================================
+    ax2 = ax.twinx() 
+    ax2.set_ylabel('', c='r')
+    ax2.set_yscale('log')
+    ax2.set_ylim(ymin=50, ymax=1e4)
+    
+    # Plotting mobility
+    if ii >1:
+        yy_mobility = np.array(aln_algan_300k['TOT'], dtype=float)
+        ax2.plot(XX, yy_mobility, '*-', c='c', ms=12)
+        ax2.annotate(z_label['TOT'][15:], xy=(XX[3], yy_mobility[3]-25), color='c')
+        circle1 = Ellipse((XX[5], yy_mobility[5]), width=0.014, height=30, 
+                                edgecolor='c', fc='None', lw=2)
+        ax2.add_patch(circle1)
+        ax2.annotate("", xy=(XX[5]+0.05, yy_mobility[5]-15), xytext=(XX[5], yy_mobility[5]-15),
+                     arrowprops=dict(arrowstyle="->",color='c', linewidth=2))
+    if ii >0:
+        # Plotting bandgap
+        bandgap_ = (6.25*XX + 3.51*(1-XX) + 0.7*XX*(1-XX))**5 
+        ax2.plot(XX, bandgap_, '^-', c='m', ms=12)
+        ax2.annotate(r'E$_\mathrm{g}^{5}$ (eV$^{5}$)', xy=(XX[3], bandgap_[3]+1.2e3), color='m')
+        circle2 = Ellipse((XX[5], bandgap_[5]), width=0.015, height=1.6e3, 
+                                edgecolor='m', fc='None', lw=2)
+        ax2.add_patch(circle2)
+        ax2.annotate("", xy=(XX[5]+0.05, bandgap_[2]+1.e3), xytext=(XX[5], bandgap_[2]+1.e3),
+                     arrowprops=dict(arrowstyle="->",color='m', linewidth=2))
+    
+    # Plotting LFOM
+    LFOM_300k = np.array(aln_algan_300k['LFOM'], dtype=float)/ref_LFOM 
+    ax.plot(XX, LFOM_300k, 'o-', c='r', ms=12)
+    ax.annotate(r'LFOM$_{\mathrm{norm}}$', xy=(XX[1], LFOM_300k[1]+0.3), color='r')
+    circle3 = Ellipse((XX[2], LFOM_300k[2]), width=0.015, height=0.2, 
+                            edgecolor='r', fc='None', lw=2)
+    ax.add_patch(circle3)
+    ax.annotate("", xy=(XX[2]-0.05, LFOM_300k[2]+0.1), xytext=(XX[2], LFOM_300k[2]+0.1),
+                 arrowprops=dict(arrowstyle="->",color='r', linewidth=2))
+    if ii >3:
+        LFOM_300k_cnst = np.array(aln_algan_300k['LFOM_2DEG1e13'], dtype=float)/ref_LFOM 
+        ax.plot(XX, LFOM_300k_cnst, 'd-', c='b', ms=12)
+        ax.annotate(r'LFOM$^*_{\mathrm{norm}}$', xy=(XX[1], LFOM_300k_cnst[1]+0.3), color='b')
+        circle4 = Ellipse((XX[2], LFOM_300k_cnst[2]), width=0.015, height=0.2, 
+                                edgecolor='b', fc='None', lw=2)
+        ax.add_patch(circle4)
+        ax.annotate("", xy=(XX[2]-0.05, LFOM_300k_cnst[2]+0.1), xytext=(XX[2], LFOM_300k_cnst[2]+0.1),
+                     arrowprops=dict(arrowstyle="->",color='b', linewidth=2))
+    
+    plt2deg.save_figure(f'{ii}_AlN25AlGaN_300K_mu_FOM_paper.{FigFormat}', savefig=savefigure, show_plot=True,
+                        fig=fig, CountFig=None, dpi=fig_save_dpi)
+    ii+=1
+    #break
 
 
 # # 4. 2DEG mobility plottings - temperature variation

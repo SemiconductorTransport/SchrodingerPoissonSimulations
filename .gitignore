@@ -164,3 +164,16 @@ cython_debug/
 OUTPUTs/
 FIGs/
 INPUTs/AlGaN_HEMT/TestInputs
+Data_and_Fig*
+
+INPUTs/AlGaN_HEMT/AlGaN_AlGaN_AlN_HEMT/nnp/InterfaceCompGradEffect_on_2DEGdensity
+DATAs/AlGaN_HEMT/AlGaN_AlGaN_AlN_HEMT/nnp/InterfaceCompGradEffect_on_2DEGdensity
+
+DATAs/AlGaN_HEMT/AlGaN_AlGaN_AlN_HEMT/nnp/Rsh_Lb_Benchmark
+INPUTs/AlGaN_HEMT/AlGaN_AlGaN_AlN_HEMT/nnp/Rsh_Lb_Benchmark
+
+SCRIPTs/AlGaN_HEMT/Notebooks/AlGaN_AlGaN_AlN_HEMT/AlGaN_HEMT_2deg_mobility_Project_InterfaceCompGradEffect_on_2DEGdensity.ipynb
+SCRIPTs/AlGaN_HEMT/Notebooks/AlGaN_AlGaN_AlN_HEMT/nnp_1d_2DEHG_density_Project_InterfaceCompGradEffect_on_2DEGdensity.ipynb
+SCRIPTs/AlGaN_HEMT/Notebooks/AlGaN_AlGaN_AlN_HEMT/nnp_1d_2DEHG_density_mobility_Project_RshLbBenchmark.ipynb
+SCRIPTs/AlGaN_HEMT/Notebooks/AlGaN_AlGaN_AlN_HEMT/nnp_1d_2DEHG_density.ipynb
+SCRIPTs/AlGaN_HEMT/Notebooks/AlGaN_AlGaN_AlN_HEMT/nnp_1d_2DEHG_density.ipynb

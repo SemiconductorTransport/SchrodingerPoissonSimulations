@@ -318,16 +318,18 @@ class Plot1DFuns(general_plot_functions):
         if plot_density:
             new_density_list = []
             for ddensity_details in density_list:
-                if ddensity_details[0] == 'Electron_density':
+                which_pp = ddensity_details[0]
+                append_ext = '_' if which_pp.endswith('_') else ''
+                if which_pp == f'Electron_density{append_ext}':
                     density_file = bias_folder.file('density_electron.dat')
-                    col_name = ['Electron_density']
-                elif ddensity_details[0] == 'Hole_density':
+                    col_name = [which_pp]
+                elif which_pp == f'Hole_density{append_ext}':
                     density_file = bias_folder.file('density_hole.dat')
-                    col_name = ['Hole_density']
-                elif ddensity_details[0] == 'Potential':
+                    col_name = [which_pp]
+                elif which_pp == f'Potential{append_ext}':
                     density_file = bias_folder.file('potential.dat')
-                    col_name = ['Potential']
-                elif ddensity_details[0] == 'PsiSqare':
+                    col_name = [which_pp]
+                elif which_pp == f'PsiSqare{append_ext}':
                     assert band_file is not None, 'Provide the which band file to plot.'
                     psi_sqr_data_folder = quantum_data_folder.go_to(band_file, f'kIndex_{kindex:05d}')
                     if 'kp' in band_file:
@@ -337,16 +339,16 @@ class Plot1DFuns(general_plot_functions):
                     density_file = psi_sqr_data_folder.file(tf_name)
                     col_name = [f'Psi^2_{band_index}_']
                     if subband_energy_level: col_name.append(f'E_{band_index}_')
-                elif ddensity_details[0] == 'Polarization_density':
+                elif which_pp == f'Polarization_density{append_ext}':
                     #density_file = strain_folder.file('density_polarization_charge.dat')
                     density_file = strain_folder.file('polarization_charge_density_total.dat')
-                    col_name = ['Density']
-                elif  ddensity_details[0] == 'Pizoelectric_density':
+                    col_name = [f'Density{append_ext}']
+                elif which_pp == f'Pizoelectric_density{append_ext}':
                     density_file = strain_folder.file('density_piezoelectric_charge.dat')
-                    col_name = ['Density']
-                elif ddensity_details[0] == 'Pyroelectric_density':
+                    col_name = [f'Density{append_ext}']
+                elif which_pp == f'Pyroelectric_density{append_ext}':
                     density_file = strain_folder.file('density_pyroelectric_charge.dat')
-                    col_name = ['Density']
+                    col_name = [f'Density{append_ext}']
                 else:
                     raise ValueError('Requested density plot is not implemented yet.')
                 
